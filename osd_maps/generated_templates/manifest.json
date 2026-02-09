@@ -72,6 +72,15 @@
   "routing": {
     "by_mode_id": {
       "session": "session_mode",
+      "pro_session": "pro_session_mode",
+      "pro_session_arm": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_solo": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_mute": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_fixed_length": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_record_quant": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_launch_quant": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_metronome": "metronome_and_tempo_bottom_row_of_matrix",
+      "pro_session_tempo": "metronome_and_tempo_bottom_row_of_matrix",
       "instrument": "instrument_controller_mode_table",
       "instrument_quick_scale": "instrument_controller_mode_table",
       "instrument_controller": "instrument_controller_mode_table",
@@ -82,9 +91,12 @@
       "user2": "user2_mode",
       "drum_stepseq_combined": "drum_step_sequencer_mode_combined_mode",
       "drum_stepseq_multinote": "drum_step_sequencer_mode_multinote_mode",
-      "drum_stepseq_scale": "quick_scale_modes_modus",
+      "drum_stepseq_scale": "scale_edition_mode_table",
       "melodic_stepseq": "melodic_step_sequencer",
-      "melodic_stepseq_scale": "root_note_table"
+      "melodic_stepseq_scale": "scale_edition_mode_table",
+      "quick_scale_root": "root_note_table",
+      "quick_scale_mode": "quick_scale_modes_modus",
+      "quick_scale_repeat": "quick_scale_modes_note_repeat"
     }
   },
   "overlays": {
