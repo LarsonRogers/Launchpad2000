@@ -9,6 +9,7 @@ class M4LInterface(ControlSurfaceComponent):
 		self._updateML_listener = None
 		self.mode = ' '
 		self.mode_id = ''
+		self.pad_colors = [0 for _ in range(64)]
 		self.clear()
 
 	def disconnect(self):

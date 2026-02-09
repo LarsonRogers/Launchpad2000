@@ -320,7 +320,43 @@ class Launchpad(ControlSurface):
 		sent_successfully = False
 		if not self._suppress_send_midi:
 			sent_successfully = ControlSurface._send_midi(self, midi_bytes, optimized=optimized)
+			if sent_successfully:
+				self._update_pad_colors_from_midi(midi_bytes)
 		return sent_successfully
+
+	def _pad_index_from_note(self, note):
+		note = int(note) & 127
+		if self._mk2_rgb or self._mk3_rgb or self._lpx:
+			# MK2/MK3/LPX grid notes: 81..88, 71..78, ... 11..18
+			row = (89 - note) // 10
+			col = note - (81 - (10 * row))
+			if row >= 0 and row < 8 and col >= 0 and col < 8:
+				return row * 8 + col
+		else:
+			# MK1 grid notes: 0..7, 16..23, ... 112..119
+			row = note // 16
+			col = note % 16
+			if row >= 0 and row < 8 and col >= 0 and col < 8:
+				return row * 8 + col
+		return -1
+
+	def _update_pad_colors_from_midi(self, midi_bytes):
+		if self._osd is None or not hasattr(self._osd, "pad_colors"):
+			return
+		if midi_bytes is None or len(midi_bytes) < 3:
+			return
+		status = int(midi_bytes[0]) & 240
+		# Grid LEDs are sent as note-on values (velocity carries the color index).
+		if status != 144:
+			return
+		note = int(midi_bytes[1]) & 127
+		velocity = int(midi_bytes[2]) & 127
+		pad_index = self._pad_index_from_note(note)
+		if pad_index < 0 or pad_index >= 64:
+			return
+		if self._osd.pad_colors[pad_index] != velocity:
+			self._osd.pad_colors[pad_index] = velocity
+			self._osd.update()
 
 	def _update_hardware(self):
 		self._suppress_send_midi = False

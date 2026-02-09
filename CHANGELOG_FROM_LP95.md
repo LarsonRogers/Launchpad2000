@@ -79,3 +79,20 @@
 - Verification:
   - All 17 JSON templates present.
   - No snapshot label exceeds 20 characters.
+
+## 2026-02-09 - Add `pad_colors[0..63]` bridge data and MIDI capture hook
+
+- File changed: `M4LInterface.py`
+- Change type: Additive M4LInterface data extension
+- Details:
+  - Added `self.pad_colors = [0 for _ in range(64)]` to expose a 64-pad row-major LED velocity buffer for Max/JWeb consumers.
+
+- File changed: `Launchpad.py`
+- Change type: Additive MIDI observation hook
+- Details:
+  - Added `_pad_index_from_note(note)` helper to map Launchpad grid note numbers to row-major pad indices:
+    - MK1 note layout (`row * 16 + col`)
+    - MK2/MK3/LPX note layout (`81..88`, `71..78`, ... `11..18`)
+  - Added `_update_pad_colors_from_midi(midi_bytes)` helper to watch outgoing note-on LED messages (`0x90`) and store velocity values into `self._osd.pad_colors[index]`.
+  - Updated `_send_midi(...)` to call `_update_pad_colors_from_midi(midi_bytes)` only after successful MIDI send.
+  - Triggered `self._osd.update()` only when a pad value changes.
