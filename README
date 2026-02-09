@@ -6,3 +6,16 @@ It does not require any external tool like Max for Live (M4L) in order to work. 
 
 manual and download : http://motscousus.com/stuff/2011-07_Novation_Launchpad_Ableton_Live_Scripts/
 
+Launchpad2000 fork notes:
+
+- This repository is a fork of hdavid/Launchpad95 with additive OSD and M4L integration.
+- To install as Launchpad2000 in Ableton Live:
+  1. Clone or download this repository.
+  2. Rename the folder to `Launchpad2000`.
+  3. Copy it into Ableton's `MIDI Remote Scripts` directory.
+  4. Restart Live and select `Launchpad2000` in Preferences -> Link/Tempo/MIDI.
+
+Git remotes for this fork:
+
+- `origin`: https://github.com/LarsonRogers/Launchpad2000.git
+- `upstream`: https://github.com/hdavid/Launchpad95.git
