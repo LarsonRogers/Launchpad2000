@@ -1,10 +1,10 @@
 autowatch = 1;
-var OSD_BRIDGE_LOADED = 1;
 var LOG_ENABLED = 0;
 if (LOG_ENABLED) { post("OSD_BRIDGE_ACTIVE\n"); }
 
 var l95_osd = null;
 var updateML_handler = null;
+var l95_osd_path = "";
 
 var mode;
 var info_0, info_1;
@@ -30,12 +30,10 @@ var show_info_section = 1;
 var show_guide_section = 1;
 var show_modeinfo_section = 1;
 
-var margin_ratio = 0.10;
 var section_gap = 8;
 var menu_height = 24;
 var guide_label_height = 20;
 var info_label_height = 20;
-var info_box_height = 220;
 
 var info_base = null;
 var info_scale = 1;
@@ -592,11 +590,7 @@ var l95_located = 0;
 var ui_located = 0;
 var max_screen_w = 0;
 var window_pad = 8;
-var sync_done = 1;
 var section_pad = 10;
-var _modeinfo_guard_until = 0;
-var _modeinfo_last_toggle = 1;
-var _modeinfo_last_value = 1;
 
 function _bool_from(v){
     if (v === undefined || v === null) { return 0; }
@@ -797,10 +791,20 @@ function load_screenshot(filename){
     sync_guide_rect();
 }
 
+function clear_updateML_listener(){
+    try {
+        if (updateML_handler) {
+            try { updateML_handler.property = ""; } catch (e1) { }
+            updateML_handler = null;
+        }
+    } catch (e2) { }
+}
+
 function locate_l95(){
     try {
         var api = new LiveAPI();
         var l95_id = -1;
+        var found_path = "";
         for (var i = 0; i < 16; i++) {
             api.goto("control_surfaces " + i);
             if (!api.type) { continue; }
@@ -811,9 +815,14 @@ function locate_l95(){
                 api.goto("control_surfaces " + i + " components " + j);
                 if (api.type == "M4LInterface") {
                     l95_id = i;
-                    l95_osd = new LiveAPI("control_surfaces " + l95_id + " components " + j);
-                    updateML_handler = new LiveAPI(update, "control_surfaces " + l95_id + " components " + j);
+                    found_path = "control_surfaces " + l95_id + " components " + j;
+                    if (l95_osd_path !== found_path) {
+                        clear_updateML_listener();
+                    }
+                    l95_osd = new LiveAPI(found_path);
+                    updateML_handler = new LiveAPI(update, found_path);
                     updateML_handler.property = "updateML";
+                    l95_osd_path = found_path;
                     break;
                 }
             }
@@ -826,9 +835,22 @@ function locate_l95(){
             log("M4LInterface not found");
             l95_located = -1;
         }
+        if (l95_id == -1) {
+            clear_updateML_listener();
+            l95_osd = null;
+            l95_osd_path = "";
+        }
     } catch (e) {
         log("locate_l95 error: " + e);
     }
+}
+
+function notifydeleted(){
+    clear_updateML_listener();
+}
+
+function freebang(){
+    clear_updateML_listener();
 }
 
 function locate_osd(){

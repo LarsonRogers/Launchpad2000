@@ -72,6 +72,8 @@
   "routing": {
     "by_mode_id": {
       "session": "session_mode",
+      "instrument": "instrument_controller_mode_table",
+      "instrument_quick_scale": "instrument_controller_mode_table",
       "instrument_controller": "instrument_controller_mode_table",
       "instrument_scale": "scale_edition_mode_table",
       "device_controller": "device_controller_mode",
