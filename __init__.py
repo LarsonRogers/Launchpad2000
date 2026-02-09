@@ -1,9 +1,9 @@
 from _Framework.Capabilities import CONTROLLER_ID_KEY, PORTS_KEY, NOTES_CC, SCRIPT, SYNC, REMOTE, controller_id, inport, outport
-from .Launchpad import Launchpad
+from .Launchpad import Launchpad as Launchpad2000
 
 def create_instance(c_instance):
-	""" Creates and returns the Launchpad script """
-	return Launchpad(c_instance)
+	""" Creates and returns the Launchpad2000 script """
+	return Launchpad2000(c_instance)
 
 def get_capabilities():
 	return {
