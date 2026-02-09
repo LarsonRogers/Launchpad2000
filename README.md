@@ -32,24 +32,34 @@ Most remaining work is runtime integration and validation in Max/Ableton/hardwar
 
 Goal: create `M4L_Devices/Launchpad2000_Grid.amxd` and wire `osd_bridge.js` to `launchpad_grid.html`.
 
+Placement rule (explicit):
+- Save the device at `M4L_Devices/Launchpad2000_Grid.amxd` (same parent folder as `M4L_Devices/js/`).
+- Do not save the `.amxd` inside `M4L_Devices/js/`.
+
+Expected layout:
+- `M4L_Devices/Launchpad2000_Grid.amxd`
+- `M4L_Devices/js/osd_bridge.js`
+- `osd_maps/ui_templates/launchpad_grid.html`
+
 1. Create a new Max for Live MIDI Effect device.
-2. Save it as `M4L_Devices/Launchpad2000_Grid.amxd`.
-3. Add objects:
+2. Immediately save it as `M4L_Devices/Launchpad2000_Grid.amxd`.
+3. Add objects with explicit arguments:
    - `live.thisdevice`
-   - `js osd_bridge.js`
-   - `jweb @url launchpad_grid.html`
+   - `js js/osd_bridge.js`
+   - `jweb @url ../osd_maps/ui_templates/launchpad_grid.html`
    - `print osd_bridge`
 4. Wire:
-   - `live.thisdevice` bang output -> `js osd_bridge.js` input
-   - `js osd_bridge.js` outlet 0 -> `jweb` input
-   - `js osd_bridge.js` outlet 1 -> `jweb` input
-   - `js osd_bridge.js` outlet 2 -> `print osd_bridge`
-5. Verify these paths resolve:
-   - `M4L_Devices/js/osd_bridge.js`
-   - `osd_maps/ui_templates/launchpad_grid.html`
+   - `live.thisdevice` bang output -> `js js/osd_bridge.js` input
+   - `js js/osd_bridge.js` outlet 0 -> `jweb` input
+   - `js js/osd_bridge.js` outlet 1 -> `jweb` input
+   - `js js/osd_bridge.js` outlet 2 -> `print osd_bridge`
+5. In Max, open the object inspector and confirm:
+   - The `js` object resolves to `M4L_Devices/js/osd_bridge.js`.
+   - The `jweb` URL resolves to `osd_maps/ui_templates/launchpad_grid.html`.
+6. Open Max Console and verify there are no "file not found" errors for:
    - `osd_maps/palettes/mk2_palette.json`
    - `osd_maps/generated_templates/manifest.json`
-6. Reload the device and confirm the Max Console shows bridge status without recurring errors.
+7. Reload the device and confirm bridge status output appears without recurring errors.
 
 ## 2. Verify Script Discovery in Ableton
 
