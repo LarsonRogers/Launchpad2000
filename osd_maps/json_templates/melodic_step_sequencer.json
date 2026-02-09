@@ -4,11 +4,11 @@
   "snapshot": {
     "t": [
       {
-        "label": "select prev sceneprev scene",
+        "label": "prev scene",
         "color": "green"
       },
       {
-        "label": "select next scenenext scene",
+        "label": "next scene",
         "color": "green"
       },
       {
@@ -28,7 +28,7 @@
         "color": ""
       },
       {
-        "label": "cycle thru StepSequencers and User Moder 2user 2 step",
+        "label": "user 2 step",
         "color": "green"
       },
       {
@@ -312,19 +312,19 @@
     ],
     "s": [
       {
-        "label": "Display Scale Selection Overlayscale",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "lock step seq to current clip (very useful !)lock",
+        "label": "lock",
         "color": "red"
       },
       {
-        "label": "cycle thru available quantisations.quant.",
+        "label": "quant.",
         "color": "amber"
       },
       {
-        "label": "randomise the selected function (pitch,length,velocity,octave)random !",
+        "label": "random !",
         "color": "green"
       },
       {

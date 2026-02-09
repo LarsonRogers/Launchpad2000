@@ -4,39 +4,73 @@
   "snapshot": {
     "t": [
       {
-        "label": "Swing +2.5%",
-        "color": "green"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Swing -2.5%",
-        "color": "green"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Swing 0%",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Swing 25%",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Swing 50%",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Swing 75%",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Repeat On/Off",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Scale / mode toggle",
-        "color": "green"
+        "label": "",
+        "color": ""
       }
     ],
     "g": [
+      [
+        {
+          "label": "Swing +2.5%",
+          "color": "green"
+        },
+        {
+          "label": "Swing -2.5%",
+          "color": "green"
+        },
+        {
+          "label": "Swing 0%",
+          "color": "amber"
+        },
+        {
+          "label": "Swing 25%",
+          "color": "amber"
+        },
+        {
+          "label": "Swing 50%",
+          "color": "amber"
+        },
+        {
+          "label": "Swing 75%",
+          "color": "amber"
+        },
+        {
+          "label": "Repeat On/Off",
+          "color": "red"
+        },
+        {
+          "label": "Scale / mode toggle",
+          "color": "green"
+        }
+      ],
       [
         {
           "label": "1/4",
@@ -274,50 +308,16 @@
           "label": "",
           "color": ""
         }
-      ],
-      [
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        }
       ]
     ],
     "s": [
       {
-        "label": "undo. long press to redoundo",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "",
-        "color": ""
+        "label": "undo",
+        "color": "amber"
       },
       {
         "label": "",

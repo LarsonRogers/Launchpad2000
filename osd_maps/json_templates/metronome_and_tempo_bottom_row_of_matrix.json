@@ -4,70 +4,70 @@
   "snapshot": {
     "t": [
       {
-        "label": "on/off",
-        "color": "green"
-      },
-      {
-        "label": "nudge left",
-        "color": "amber"
-      },
-      {
-        "label": "nudge right",
-        "color": "amber"
-      },
-      {
-        "label": "-5",
+        "label": "",
         "color": ""
       },
       {
-        "label": "-1",
+        "label": "",
         "color": ""
       },
       {
-        "label": "+1",
+        "label": "",
         "color": ""
       },
       {
-        "label": "+5",
+        "label": "",
         "color": ""
       },
       {
-        "label": "tap",
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
         "color": ""
       }
     ],
     "g": [
       [
         {
-          "label": "",
+          "label": "on/off",
+          "color": "green"
+        },
+        {
+          "label": "nudge left",
+          "color": "amber"
+        },
+        {
+          "label": "nudge right",
+          "color": "amber"
+        },
+        {
+          "label": "-5",
           "color": ""
         },
         {
-          "label": "",
+          "label": "-1",
           "color": ""
         },
         {
-          "label": "",
+          "label": "+1",
           "color": ""
         },
         {
-          "label": "",
+          "label": "+5",
           "color": ""
         },
         {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
+          "label": "tap",
           "color": ""
         }
       ],
@@ -312,8 +312,8 @@
     ],
     "s": [
       {
-        "label": "",
-        "color": ""
+        "label": "Record Arm",
+        "color": "red"
       },
       {
         "label": "",

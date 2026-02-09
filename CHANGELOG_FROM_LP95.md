@@ -63,3 +63,19 @@
 - File changed: `StepSequencerComponent2.py`
 - Details:
   - Added `self._osd.mode_id = "melodic_stepseq"` next to `self._osd.set_mode('Melodic Step Sequencer')`.
+
+## 2026-02-09 - Fix OSD template normalization label leakage
+
+- File changed: `osd_maps/scripts/normalize_osd_templates.py`
+- Change type: Parser fix for note-tooltip exclusion
+- Details:
+  - Replaced note suppression from a tag-name stack (`_note_stack`) to depth tracking (`_note_depth`) so nested tags inside `<div class="note">` / `<div class="noteTop">` do not prematurely re-enable text capture.
+  - Added `VOID_TAGS` handling to avoid depth drift on void elements like `<br>`.
+  - Reset note depth at cell close (`</td>`/`</th>`) to prevent leakage across malformed cell content.
+  - Added `handle_startendtag` no-op for explicit self-closing tags.
+
+- Regenerated templates in `osd_maps/json_templates/` using:
+  - `python3 osd_maps/scripts/normalize_osd_templates.py`
+- Verification:
+  - All 17 JSON templates present.
+  - No snapshot label exceeds 20 characters.

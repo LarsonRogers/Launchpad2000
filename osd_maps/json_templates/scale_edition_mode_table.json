@@ -312,11 +312,11 @@
     ],
     "s": [
       {
-        "label": "enter scale edition modescale",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "undo. long press to redoundo",
+        "label": "undo",
         "color": "amber"
       },
       {
@@ -328,19 +328,19 @@
         "color": "green"
       },
       {
-        "label": "start/stop selected clip. long press to deletestart stop",
+        "label": "start stop",
         "color": "red"
       },
       {
-        "label": "lock to tracklock",
+        "label": "lock",
         "color": "red"
       },
       {
-        "label": "solo current tracksolo",
+        "label": "solo",
         "color": "amber"
       },
       {
-        "label": "session recordoverdub",
+        "label": "overdub",
         "color": "red"
       }
     ]

@@ -7,6 +7,10 @@ from html.parser import HTMLParser
 from typing import List, Optional
 
 COLOR_CLASSES = {"red", "amber", "green"}
+VOID_TAGS = {
+    "area", "base", "br", "col", "embed", "hr", "img", "input",
+    "link", "meta", "param", "source", "track", "wbr",
+}
 
 
 def normalize_label(text: str) -> str:
@@ -30,9 +34,11 @@ class TableParser(HTMLParser):
         self._current_row_classes: List[str] = []
         self._current_cell: Optional[dict] = None
         self._current_cell_text: List[str] = []
-        self._note_stack: List[str] = []
+        self._note_depth = 0
 
     def handle_starttag(self, tag: str, attrs):
+        if self._note_depth > 0 and tag not in VOID_TAGS:
+            self._note_depth += 1
         if tag == "tr":
             self._current_row = []
             self._current_row_classes = []
@@ -52,15 +58,16 @@ class TableParser(HTMLParser):
             }
             self._current_cell_text = []
         else:
-            for key, value in attrs:
-                if key == "class" and value:
-                    classes = value.split()
-                    if "note" in classes or "noteTop" in classes:
-                        self._note_stack.append(tag)
-                        break
+            if self._note_depth == 0:
+                for key, value in attrs:
+                    if key == "class" and value:
+                        classes = value.split()
+                        if "note" in classes or "noteTop" in classes:
+                            self._note_depth = 1
+                            break
 
     def handle_data(self, data: str):
-        if self._current_cell is not None and not self._note_stack:
+        if self._current_cell is not None and self._note_depth == 0:
             self._current_cell_text.append(data)
 
     def handle_endtag(self, tag: str):
@@ -70,6 +77,7 @@ class TableParser(HTMLParser):
             self._current_row.append(self._current_cell)
             self._current_cell = None
             self._current_cell_text = []
+            self._note_depth = 0
         elif tag == "tr" and self._current_row is not None:
             self.rows.append({
                 "classes": self._current_row_classes,
@@ -77,8 +85,12 @@ class TableParser(HTMLParser):
             })
             self._current_row = None
             self._current_row_classes = []
-        elif self._note_stack and tag == self._note_stack[-1]:
-            self._note_stack.pop()
+        elif self._note_depth > 0 and tag not in VOID_TAGS:
+            self._note_depth -= 1
+
+    def handle_startendtag(self, tag: str, attrs):
+        # Explicitly ignore self-closing tags for note depth tracking.
+        return
 
 
 def extract_color(classes: List[str]) -> str:

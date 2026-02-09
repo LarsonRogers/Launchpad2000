@@ -4,70 +4,70 @@
   "snapshot": {
     "t": [
       {
-        "label": "on/off",
-        "color": "green"
-      },
-      {
-        "label": "decrease",
-        "color": "amber"
-      },
-      {
-        "label": "increase",
-        "color": "amber"
-      },
-      {
-        "label": "value1",
+        "label": "",
         "color": ""
       },
       {
-        "label": "value2",
+        "label": "",
         "color": ""
       },
       {
-        "label": "value3",
+        "label": "",
         "color": ""
       },
       {
-        "label": "value4",
+        "label": "",
         "color": ""
       },
       {
-        "label": "value5",
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
         "color": ""
       }
     ],
     "g": [
       [
         {
-          "label": "",
+          "label": "on/off",
+          "color": "green"
+        },
+        {
+          "label": "decrease",
+          "color": "amber"
+        },
+        {
+          "label": "increase",
+          "color": "amber"
+        },
+        {
+          "label": "value1",
           "color": ""
         },
         {
-          "label": "",
+          "label": "value2",
           "color": ""
         },
         {
-          "label": "",
+          "label": "value3",
           "color": ""
         },
         {
-          "label": "",
+          "label": "value4",
           "color": ""
         },
         {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
+          "label": "value5",
           "color": ""
         }
       ],
@@ -312,8 +312,8 @@
     ],
     "s": [
       {
-        "label": "",
-        "color": ""
+        "label": "Record Arm",
+        "color": "red"
       },
       {
         "label": "",

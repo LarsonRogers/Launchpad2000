@@ -4,24 +4,24 @@
   "snapshot": {
     "t": [
       {
-        "label": "arm mute solo",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "arm mute solo",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "arm mute solo",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "arm mute solo",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "arm mute solo",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
         "label": "",
@@ -39,24 +39,24 @@
     "g": [
       [
         {
-          "label": "",
-          "color": ""
+          "label": "arm mute solo",
+          "color": "red"
         },
         {
-          "label": "",
-          "color": ""
+          "label": "arm mute solo",
+          "color": "red"
         },
         {
-          "label": "",
-          "color": ""
+          "label": "arm mute solo",
+          "color": "red"
         },
         {
-          "label": "",
-          "color": ""
+          "label": "arm mute solo",
+          "color": "red"
         },
         {
-          "label": "",
-          "color": ""
+          "label": "arm mute solo",
+          "color": "red"
         },
         {
           "label": "",
@@ -312,8 +312,8 @@
     ],
     "s": [
       {
-        "label": "",
-        "color": ""
+        "label": "Record Arm",
+        "color": "red"
       },
       {
         "label": "",

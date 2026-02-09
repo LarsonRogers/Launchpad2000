@@ -4,19 +4,19 @@
   "snapshot": {
     "t": [
       {
-        "label": "select prev sceneprev scene",
+        "label": "prev scene",
         "color": "green"
       },
       {
-        "label": "select next scenenext scene",
+        "label": "next scene",
         "color": "green"
       },
       {
-        "label": "select prev clip pageprevpage",
+        "label": "prevpage",
         "color": "green"
       },
       {
-        "label": "select next clip pagenextpage",
+        "label": "nextpage",
         "color": "green"
       },
       {
@@ -28,7 +28,7 @@
         "color": ""
       },
       {
-        "label": "cycle thru StepSequencers and User Mode 2user 2 step",
+        "label": "user 2 step",
         "color": "amber"
       },
       {
@@ -312,35 +312,35 @@
     ],
     "s": [
       {
-        "label": "Display Scale Selection Overlayscale",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "lock step seq to current clip (very useful !)lock",
+        "label": "lock",
         "color": "red"
       },
       {
-        "label": "cycle thru available quantisationsquant.",
+        "label": "quant.",
         "color": "amber"
       },
       {
-        "label": "switches between combined and multinote modesmodes",
+        "label": "modes",
         "color": "amber"
       },
       {
-        "label": "scroll up (notes)up",
+        "label": "up",
         "color": "green"
       },
       {
-        "label": "scroll down (notes)down",
+        "label": "down",
         "color": "green"
       },
       {
-        "label": "cycle thru velocities and velocity shift notesvelocity",
+        "label": "velocity",
         "color": "green"
       },
       {
-        "label": "hold and press a note in the matrix to (un)mute it. hold and press a note in the note selector to mute a lanehold+nav keys to scroll up/down one octavemute",
+        "label": "mute",
         "color": "red"
       }
     ]

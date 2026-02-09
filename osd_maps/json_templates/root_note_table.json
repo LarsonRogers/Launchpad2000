@@ -4,39 +4,73 @@
   "snapshot": {
     "t": [
       {
-        "label": "C#",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "D#",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "relative scale",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "F#",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "G#",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "A#",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "5th left",
-        "color": "red"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "scale / mode toggle",
-        "color": "red"
+        "label": "",
+        "color": ""
       }
     ],
     "g": [
+      [
+        {
+          "label": "C#",
+          "color": "amber"
+        },
+        {
+          "label": "D#",
+          "color": "amber"
+        },
+        {
+          "label": "relative scale",
+          "color": "red"
+        },
+        {
+          "label": "F#",
+          "color": "amber"
+        },
+        {
+          "label": "G#",
+          "color": "amber"
+        },
+        {
+          "label": "A#",
+          "color": "amber"
+        },
+        {
+          "label": "5th left",
+          "color": "red"
+        },
+        {
+          "label": "scale / mode toggle",
+          "color": "red"
+        }
+      ],
       [
         {
           "label": "C",
@@ -274,50 +308,16 @@
           "label": "",
           "color": ""
         }
-      ],
-      [
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        }
       ]
     ],
     "s": [
       {
-        "label": "undo. long press to redoundo",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "",
-        "color": ""
+        "label": "undo",
+        "color": "amber"
       },
       {
         "label": "",

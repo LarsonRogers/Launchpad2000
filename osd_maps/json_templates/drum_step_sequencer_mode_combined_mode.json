@@ -28,7 +28,7 @@
         "color": ""
       },
       {
-        "label": "cycle thru StepSequencers and User Mode 2user 2 step",
+        "label": "user 2 step",
         "color": "amber"
       },
       {
@@ -312,35 +312,35 @@
     ],
     "s": [
       {
-        "label": "Display Scale Selection Overlayscale",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "lock step seq to current clip (very useful !). long press to lock on current track onlylock",
+        "label": "lock",
         "color": "red"
       },
       {
-        "label": "cycle thru available quantisations. long press to duplicate clip and select newquant.",
+        "label": "quant.",
         "color": "amber"
       },
       {
-        "label": "switches between combined and multinote modesmodes",
+        "label": "modes",
         "color": "amber"
       },
       {
-        "label": "scroll up (notes)up",
+        "label": "up",
         "color": "green"
       },
       {
-        "label": "scroll down (notes)down",
+        "label": "down",
         "color": "green"
       },
       {
-        "label": "cycle thru velocities and velocity shift notesvelocity",
+        "label": "velocity",
         "color": "green"
       },
       {
-        "label": "hold and press a note in the matrix to (un)mute it. hold and press a note in the note selector to mute a lanehold+nav keys to scroll up/down one octavemute",
+        "label": "mute",
         "color": "red"
       }
     ]

@@ -4,39 +4,73 @@
   "snapshot": {
     "t": [
       {
-        "label": "Major",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Minor",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Dorian",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Mixolyd.",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Lydian",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Phrygian",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "Locrian",
-        "color": "amber"
+        "label": "",
+        "color": ""
       },
       {
-        "label": "scale / mode toggle",
-        "color": "red"
+        "label": "",
+        "color": ""
       }
     ],
     "g": [
+      [
+        {
+          "label": "Major",
+          "color": "amber"
+        },
+        {
+          "label": "Minor",
+          "color": "amber"
+        },
+        {
+          "label": "Dorian",
+          "color": "amber"
+        },
+        {
+          "label": "Mixolyd.",
+          "color": "amber"
+        },
+        {
+          "label": "Lydian",
+          "color": "amber"
+        },
+        {
+          "label": "Phrygian",
+          "color": "amber"
+        },
+        {
+          "label": "Locrian",
+          "color": "amber"
+        },
+        {
+          "label": "scale / mode toggle",
+          "color": "red"
+        }
+      ],
       [
         {
           "label": "Diminish.",
@@ -274,50 +308,16 @@
           "label": "",
           "color": ""
         }
-      ],
-      [
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        },
-        {
-          "label": "",
-          "color": ""
-        }
       ]
     ],
     "s": [
       {
-        "label": "undo. long press to redoundo",
+        "label": "scale",
         "color": "amber"
       },
       {
-        "label": "",
-        "color": ""
+        "label": "undo",
+        "color": "amber"
       },
       {
         "label": "",
