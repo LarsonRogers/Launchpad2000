@@ -1,0 +1,19 @@
+# .codex/config.toml — Launchpad2000 project config
+#
+# Codex reads this automatically when you run `codex` from the repo root.
+# See: https://developers.openai.com/codex/config-basic/
+
+# Model — gpt-5.3-codex is the default coding model
+model = "gpt-5.3-codex"
+
+# Auto-approve file edits and commands without prompting.
+# "on-failure" = run everything, only ask if a command fails.
+# This is equivalent to launching with --full-auto.
+approval_policy = "on-failure"
+
+# Allow writing to the workspace (not just read-only).
+sandbox_mode = "workspace-write"
+
+# Tell Codex to also read CLAUDE.md and the style guide as instruction files,
+# in addition to AGENTS.md which it picks up by default.
+project_doc_fallback_filenames = ["CLAUDE.md", "CLAUDE_CODE_STYLE_GUIDE.md", "IMPLEMENTATION_PLAN.md"]
