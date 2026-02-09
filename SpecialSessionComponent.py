@@ -49,6 +49,7 @@ class SpecialSessionComponent(SessionComponent):
 	def _update_OSD(self):
 		if self._osd != None:
 			self._osd.mode = "Session"
+			self._osd.mode_id = "session"
 			for i in range(self._num_tracks):
 				self._osd.attribute_names[i] = " "
 				self._osd.attributes[i] = " "

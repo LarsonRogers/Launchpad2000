@@ -334,6 +334,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._mode_index = 1
 			self._osd.clear()
 			self._osd.mode = "User 1"
+			self._osd.mode_id = "user1"
 			self._osd.update()
 		elif mode == "drum stepseq":
 			self._control_surface.show_message("DRUM STEP SEQUENCER MODE")
@@ -368,6 +369,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._mode_index = 2
 			self._osd.clear()
 			self._osd.mode = "User 2"
+			self._osd.mode_id = "user2"
 			self._osd.update()
 		
 	def _setup_session(self, as_active, as_navigation_enabled):

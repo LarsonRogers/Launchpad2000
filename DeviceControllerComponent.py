@@ -164,6 +164,7 @@ class DeviceControllerComponent(DeviceComponent):
     def _update_OSD(self):
         if self._osd is not None:
             self._osd.mode = "Device Controller"
+            self._osd.mode_id = "device_controller"
             i = 0
             try:
                 for slider in self._parameter_controls:

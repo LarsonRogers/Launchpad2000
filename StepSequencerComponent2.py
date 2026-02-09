@@ -788,6 +788,7 @@ class StepSequencerComponent2(StepSequencerComponent):
 	def _update_OSD(self):
 		if self._osd != None:
 			self._osd.set_mode('Melodic Step Sequencer')
+			self._osd.mode_id = "melodic_stepseq"
 			if self._clip != None:
 				self._osd.attributes[0] = MUSICAL_MODES[self._scale_selector._modus * 2]
 				self._osd.attribute_names[0] = "Scale"

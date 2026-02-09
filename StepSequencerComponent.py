@@ -180,8 +180,10 @@ class StepSequencerComponent(CompoundComponent):
         if self._osd != None:
             if self._mode == STEPSEQ_MODE_MULTINOTE:
                 self._osd.set_mode('Drum Step Sequencer (multinote)')
+                self._osd.mode_id = "drum_stepseq_multinote"
             else:
                 self._osd.set_mode('Drum Step Sequencer')
+                self._osd.mode_id = "drum_stepseq_combined"
 
             if self._clip != None:
                 self._osd.attributes[0] = MUSICAL_MODES[self._scale_selector._modus * 2]
@@ -657,6 +659,7 @@ class StepSequencerComponent(CompoundComponent):
                 if self._mode == STEPSEQ_MODE_SCALE_EDIT:
                     self._scale_selector_button.turn_on()
                     self._osd.set_mode('Scale')
+                    self._osd.mode_id = "drum_stepseq_scale"
                 else:
                     self._scale_selector_button.turn_off()
 

@@ -52,6 +52,7 @@ class InstrumentControllerComponent(CompoundComponent):
 		self.set_octave_down_button(side_buttons[3])#Shift octave down
 		
 		self._osd_mode_backup = "Instrument"
+		self._osd_mode_id_backup = "instrument"
 		
 		self._track_controller = self.register_component(TrackControllerComponent(control_surface = control_surface, implicit_arm = True))
 		self._track_controller.set_enabled(False)
@@ -209,13 +210,16 @@ class InstrumentControllerComponent(CompoundComponent):
 				else:
 					self._scales.set_enabled(True)
 					self._osd_mode_backup = self._osd.mode
+					self._osd_mode_id_backup = self._osd.mode_id
 					self._osd.mode = self._osd_mode_backup + ' - Scale'
+					self._osd.mode_id = "instrument_scale"
 					self._scales_toggle_button.turn_on()
 					self._scales.update()
 			else:
 				self._scales_toggle_button.turn_off()
 				self._scales.set_enabled(False)
 				self._osd.mode = self._osd_mode_backup
+				self._osd.mode_id = self._osd_mode_id_backup
 				if(not self._scales.is_quick_scale):
 					self._note_repeat.set_enabled(False)
 				self.set_enabled(True)
@@ -434,8 +438,10 @@ class InstrumentControllerComponent(CompoundComponent):
 		if self._osd != None:
 			if self._scales.is_quick_scale:
 				self._osd.mode = "Instrument (quick scale)"
+				self._osd.mode_id = "instrument_quick_scale"
 			else:
 				self._osd.mode = "Instrument"
+				self._osd.mode_id = "instrument"
 			self._osd.attributes[0] = MUSICAL_MODES[self._scales._modus * 2]
 			self._osd.attribute_names[0] = "Scale"
 			self._osd.attributes[1] = KEY_NAMES[self._scales._key % 12]

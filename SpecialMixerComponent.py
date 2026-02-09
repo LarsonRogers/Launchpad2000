@@ -73,6 +73,7 @@ class SpecialMixerComponent(MixerComponent):
 	def _update_OSD(self):
 		if self._osd != None:
 			self._osd.mode = "Mixer"
+			self._osd.mode_id = "mixer"
 			for i in range(8):
 				self._osd.attribute_names[i] = " "
 				self._osd.attributes[i] = " "

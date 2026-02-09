@@ -659,6 +659,7 @@ class DeviceControllerStripServer(ButtonSliderElement, threading.Thread):
     def _custom_update_OSD(self, trigger_osd=True):
         if self._parent._osd is not None:
             self._parent._osd.mode = "Device Controller"
+            self._parent._osd.mode_id = "device_controller"
             name = self.param_name()
             if name is not "None":
                 self._parent._osd.attribute_names[self._column] = str(name)
