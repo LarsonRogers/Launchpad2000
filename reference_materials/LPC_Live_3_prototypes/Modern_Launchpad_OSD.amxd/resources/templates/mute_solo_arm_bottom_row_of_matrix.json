@@ -1,0 +1,349 @@
+{
+  "id": "mute_solo_arm_bottom_row_of_matrix",
+  "name": "mute, solo, arm - bottom row of matrix",
+  "snapshot": {
+    "t": [
+      {
+        "label": "arm mute solo",
+        "color": "red"
+      },
+      {
+        "label": "arm mute solo",
+        "color": "red"
+      },
+      {
+        "label": "arm mute solo",
+        "color": "red"
+      },
+      {
+        "label": "arm mute solo",
+        "color": "red"
+      },
+      {
+        "label": "arm mute solo",
+        "color": "red"
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/mute, solo, arm - bottom row of matrix.html"
+}

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang='en'><head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Launchpad OSD Base Template</title>
+<style>
+:root{
+  --border:#4b4b4b;
+  --shadow: rgba(0,0,0,.35);
+
+  --pad:#707070;
+  --pad2:#5f5f5f;
+
+  --red:#d94b3d;
+  --red2:#b53a30;
+
+  --amber:#f0a443;
+  --amber2:#c8842f;
+
+  --green:#2dbf6e;
+  --green2:#23995a;
+
+  --text:#e8e8e8;
+  --muted:#c8c8c8;
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  background:#1f1f1f;
+  color:var(--text);
+  font:14px/1.35 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+.wrap{
+  width: 650px;
+  margin: 0 auto;
+  padding: 10px 10px 14px;
+  background: linear-gradient(#3c3c3c, #2a2a2a);
+  border: 1px solid #4a4a4a;
+  border-radius: 4px;
+}
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 4px 6px 10px;
+}
+.header h1{
+  font-size: 18px;
+  margin:0;
+  font-weight:700;
+}
+.note{
+  padding: 0 6px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.stage{
+  display:inline-block;
+  background: linear-gradient(#343434,#2a2a2a);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  box-shadow: 0 10px 18px var(--shadow) inset;
+}
+.launchpad{
+  display:grid;
+  grid-template-columns: repeat(8, 56px) 56px; /* 8 top/grid cols + right-side col */
+  grid-template-rows: 56px repeat(8, 56px);    /* top row + 8 grid rows */
+  gap: 10px;
+  align-items:center;
+  justify-content:center;
+}
+.btn{
+  width:56px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding: 6px;
+  user-select:none;
+  color:#1e1e1e;
+  font-weight: 700;
+  letter-spacing: .2px;
+  font-size: 12px;
+  background: radial-gradient(circle at 35% 28%, var(--pad) 0%, var(--pad2) 62%, #4d4d4d 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.10) inset,
+    0 10px 18px rgba(0,0,0,.22) inset,
+    0 2px 0 rgba(0,0,0,.25);
+  position:relative;
+}
+.btn.circle{ border-radius: 999px; }
+.btn.square{ border-radius: 6px; }
+.btn.red{
+  background: radial-gradient(circle at 35% 28%, var(--red) 0%, var(--red2) 60%, #7d2620 100%);
+}
+.btn.amber{
+  background: radial-gradient(circle at 35% 28%, var(--amber) 0%, var(--amber2) 60%, #6a4616 100%);
+}
+.btn.green{
+  background: radial-gradient(circle at 35% 28%, var(--green) 0%, var(--green2) 60%, #0f3d28 100%);
+}
+.label{ pointer-events:none; }
+.spacer{
+  width:56px;
+  height:56px;
+  opacity:0;
+}
+</style></head><body>
+<div class='wrap'>
+<div class='header'><h1 id='title'>Mode</h1></div>
+<div id='note' class='note' style='display:none;'></div>
+<div class='stage'><div class='launchpad'>
+<div id='t0' class='btn circle' data-id='t0'><span class='label'></span></div>
+<div id='t1' class='btn circle' data-id='t1'><span class='label'></span></div>
+<div id='t2' class='btn circle' data-id='t2'><span class='label'></span></div>
+<div id='t3' class='btn circle' data-id='t3'><span class='label'></span></div>
+<div id='t4' class='btn circle' data-id='t4'><span class='label'></span></div>
+<div id='t5' class='btn circle' data-id='t5'><span class='label'></span></div>
+<div id='t6' class='btn circle' data-id='t6'><span class='label'></span></div>
+<div id='t7' class='btn circle' data-id='t7'><span class='label'></span></div>
+<div class='spacer' aria-hidden='true'></div>
+<div id='g00' class='btn square' data-id='g00'><span class='label'></span></div>
+<div id='g01' class='btn square' data-id='g01'><span class='label'></span></div>
+<div id='g02' class='btn square' data-id='g02'><span class='label'></span></div>
+<div id='g03' class='btn square' data-id='g03'><span class='label'></span></div>
+<div id='g04' class='btn square' data-id='g04'><span class='label'></span></div>
+<div id='g05' class='btn square' data-id='g05'><span class='label'></span></div>
+<div id='g06' class='btn square' data-id='g06'><span class='label'></span></div>
+<div id='g07' class='btn square' data-id='g07'><span class='label'></span></div>
+<div id='s0' class='btn circle' data-id='s0'><span class='label'></span></div>
+<div id='g10' class='btn square' data-id='g10'><span class='label'></span></div>
+<div id='g11' class='btn square' data-id='g11'><span class='label'></span></div>
+<div id='g12' class='btn square' data-id='g12'><span class='label'></span></div>
+<div id='g13' class='btn square' data-id='g13'><span class='label'></span></div>
+<div id='g14' class='btn square' data-id='g14'><span class='label'></span></div>
+<div id='g15' class='btn square' data-id='g15'><span class='label'></span></div>
+<div id='g16' class='btn square' data-id='g16'><span class='label'></span></div>
+<div id='g17' class='btn square' data-id='g17'><span class='label'></span></div>
+<div id='s1' class='btn circle' data-id='s1'><span class='label'></span></div>
+<div id='g20' class='btn square' data-id='g20'><span class='label'></span></div>
+<div id='g21' class='btn square' data-id='g21'><span class='label'></span></div>
+<div id='g22' class='btn square' data-id='g22'><span class='label'></span></div>
+<div id='g23' class='btn square' data-id='g23'><span class='label'></span></div>
+<div id='g24' class='btn square' data-id='g24'><span class='label'></span></div>
+<div id='g25' class='btn square' data-id='g25'><span class='label'></span></div>
+<div id='g26' class='btn square' data-id='g26'><span class='label'></span></div>
+<div id='g27' class='btn square' data-id='g27'><span class='label'></span></div>
+<div id='s2' class='btn circle' data-id='s2'><span class='label'></span></div>
+<div id='g30' class='btn square' data-id='g30'><span class='label'></span></div>
+<div id='g31' class='btn square' data-id='g31'><span class='label'></span></div>
+<div id='g32' class='btn square' data-id='g32'><span class='label'></span></div>
+<div id='g33' class='btn square' data-id='g33'><span class='label'></span></div>
+<div id='g34' class='btn square' data-id='g34'><span class='label'></span></div>
+<div id='g35' class='btn square' data-id='g35'><span class='label'></span></div>
+<div id='g36' class='btn square' data-id='g36'><span class='label'></span></div>
+<div id='g37' class='btn square' data-id='g37'><span class='label'></span></div>
+<div id='s3' class='btn circle' data-id='s3'><span class='label'></span></div>
+<div id='g40' class='btn square' data-id='g40'><span class='label'></span></div>
+<div id='g41' class='btn square' data-id='g41'><span class='label'></span></div>
+<div id='g42' class='btn square' data-id='g42'><span class='label'></span></div>
+<div id='g43' class='btn square' data-id='g43'><span class='label'></span></div>
+<div id='g44' class='btn square' data-id='g44'><span class='label'></span></div>
+<div id='g45' class='btn square' data-id='g45'><span class='label'></span></div>
+<div id='g46' class='btn square' data-id='g46'><span class='label'></span></div>
+<div id='g47' class='btn square' data-id='g47'><span class='label'></span></div>
+<div id='s4' class='btn circle' data-id='s4'><span class='label'></span></div>
+<div id='g50' class='btn square' data-id='g50'><span class='label'></span></div>
+<div id='g51' class='btn square' data-id='g51'><span class='label'></span></div>
+<div id='g52' class='btn square' data-id='g52'><span class='label'></span></div>
+<div id='g53' class='btn square' data-id='g53'><span class='label'></span></div>
+<div id='g54' class='btn square' data-id='g54'><span class='label'></span></div>
+<div id='g55' class='btn square' data-id='g55'><span class='label'></span></div>
+<div id='g56' class='btn square' data-id='g56'><span class='label'></span></div>
+<div id='g57' class='btn square' data-id='g57'><span class='label'></span></div>
+<div id='s5' class='btn circle' data-id='s5'><span class='label'></span></div>
+<div id='g60' class='btn square' data-id='g60'><span class='label'></span></div>
+<div id='g61' class='btn square' data-id='g61'><span class='label'></span></div>
+<div id='g62' class='btn square' data-id='g62'><span class='label'></span></div>
+<div id='g63' class='btn square' data-id='g63'><span class='label'></span></div>
+<div id='g64' class='btn square' data-id='g64'><span class='label'></span></div>
+<div id='g65' class='btn square' data-id='g65'><span class='label'></span></div>
+<div id='g66' class='btn square' data-id='g66'><span class='label'></span></div>
+<div id='g67' class='btn square' data-id='g67'><span class='label'></span></div>
+<div id='s6' class='btn circle' data-id='s6'><span class='label'></span></div>
+<div id='g70' class='btn square' data-id='g70'><span class='label'></span></div>
+<div id='g71' class='btn square' data-id='g71'><span class='label'></span></div>
+<div id='g72' class='btn square' data-id='g72'><span class='label'></span></div>
+<div id='g73' class='btn square' data-id='g73'><span class='label'></span></div>
+<div id='g74' class='btn square' data-id='g74'><span class='label'></span></div>
+<div id='g75' class='btn square' data-id='g75'><span class='label'></span></div>
+<div id='g76' class='btn square' data-id='g76'><span class='label'></span></div>
+<div id='g77' class='btn square' data-id='g77'><span class='label'></span></div>
+<div id='s7' class='btn circle' data-id='s7'><span class='label'></span></div>
+</div></div></div>
+<script>
+// Base API used by OSD glue.
+// index scheme: top buttons: t0..t7; grid: g<row><col> (0-based); side: s0..s7
+function setLabel(id, text){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const lab = el.querySelector('.label');
+  if(lab) lab.textContent = text ?? '';
+}
+function setColor(id, color){
+  // color: 'red' | 'amber' | 'green' | '' (default grey)
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('red','amber','green');
+  if(color) el.classList.add(color);
+}
+function setCell(id, {label, color}={}){
+  if(label !== undefined) setLabel(id,label);
+  if(color !== undefined) setColor(id,color);
+}
+function applySnapshot(snapshot){
+  // snapshot: { t:[{label,color}..8], g:[[..8]..8], s:[..8] }
+  if(!snapshot) return;
+  if(Array.isArray(snapshot.t)) snapshot.t.forEach((c,i)=>setCell(`t${i}`, c));
+  if(Array.isArray(snapshot.g)) snapshot.g.forEach((row,r)=>row.forEach((c,i)=>setCell(`g${r}${i}`, c)));
+  if(Array.isArray(snapshot.s)) snapshot.s.forEach((c,i)=>setCell(`s${i}`, c));
+}
+</script>
+
+<script src="renderer.js"></script>
+</body></html>

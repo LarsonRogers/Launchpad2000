@@ -1,0 +1,349 @@
+{
+  "id": "user1_mode",
+  "name": "User1 Mode",
+  "snapshot": {
+    "t": [
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "Session mode",
+        "color": "amber"
+      },
+      {
+        "label": "user 1 Inst.",
+        "color": "red"
+      },
+      {
+        "label": "user 2 step",
+        "color": "amber"
+      },
+      {
+        "label": "mixer mode",
+        "color": "amber"
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/User1 Mode.html"
+}

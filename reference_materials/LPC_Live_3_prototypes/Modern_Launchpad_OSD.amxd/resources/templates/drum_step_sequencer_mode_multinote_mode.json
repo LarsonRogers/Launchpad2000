@@ -1,0 +1,349 @@
+{
+  "id": "drum_step_sequencer_mode_multinote_mode",
+  "name": "Drum Step Sequencer Mode - Multinote Mode",
+  "snapshot": {
+    "t": [
+      {
+        "label": "select prev sceneprev scene",
+        "color": "green"
+      },
+      {
+        "label": "select next scenenext scene",
+        "color": "green"
+      },
+      {
+        "label": "select prev clip pageprevpage",
+        "color": "green"
+      },
+      {
+        "label": "select next clip pagenextpage",
+        "color": "green"
+      },
+      {
+        "label": "Session mode",
+        "color": ""
+      },
+      {
+        "label": "user 1 device",
+        "color": ""
+      },
+      {
+        "label": "cycle thru StepSequencers and User Mode 2user 2 step",
+        "color": "amber"
+      },
+      {
+        "label": "mixer mode",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "Display Scale Selection Overlayscale",
+        "color": "amber"
+      },
+      {
+        "label": "lock step seq to current clip (very useful !)lock",
+        "color": "red"
+      },
+      {
+        "label": "cycle thru available quantisationsquant.",
+        "color": "amber"
+      },
+      {
+        "label": "switches between combined and multinote modesmodes",
+        "color": "amber"
+      },
+      {
+        "label": "scroll up (notes)up",
+        "color": "green"
+      },
+      {
+        "label": "scroll down (notes)down",
+        "color": "green"
+      },
+      {
+        "label": "cycle thru velocities and velocity shift notesvelocity",
+        "color": "green"
+      },
+      {
+        "label": "hold and press a note in the matrix to (un)mute it. hold and press a note in the note selector to mute a lanehold+nav keys to scroll up/down one octavemute",
+        "color": "red"
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Drum Step Sequencer Mode - Multinote Mode.html"
+}

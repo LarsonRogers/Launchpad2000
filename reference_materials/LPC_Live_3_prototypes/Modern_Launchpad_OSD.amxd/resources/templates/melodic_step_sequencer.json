@@ -1,0 +1,349 @@
+{
+  "id": "melodic_step_sequencer",
+  "name": "Melodic Step Sequencer",
+  "snapshot": {
+    "t": [
+      {
+        "label": "select prev sceneprev scene",
+        "color": "green"
+      },
+      {
+        "label": "select next scenenext scene",
+        "color": "green"
+      },
+      {
+        "label": "prev track",
+        "color": "green"
+      },
+      {
+        "label": "next track",
+        "color": "green"
+      },
+      {
+        "label": "Session mode",
+        "color": ""
+      },
+      {
+        "label": "user 1 device",
+        "color": ""
+      },
+      {
+        "label": "cycle thru StepSequencers and User Moder 2user 2 step",
+        "color": "green"
+      },
+      {
+        "label": "mixer mode",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "Display Scale Selection Overlayscale",
+        "color": "amber"
+      },
+      {
+        "label": "lock step seq to current clip (very useful !)lock",
+        "color": "red"
+      },
+      {
+        "label": "cycle thru available quantisations.quant.",
+        "color": "amber"
+      },
+      {
+        "label": "randomise the selected function (pitch,length,velocity,octave)random !",
+        "color": "green"
+      },
+      {
+        "label": "length",
+        "color": "amber"
+      },
+      {
+        "label": "octave",
+        "color": "red"
+      },
+      {
+        "label": "velocity",
+        "color": "red"
+      },
+      {
+        "label": "notes",
+        "color": "green"
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Melodic Step Sequencer.html"
+}

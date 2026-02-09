@@ -1,0 +1,349 @@
+{
+  "id": "instrument_controller_mode_table",
+  "name": "Instrument controller mode table",
+  "snapshot": {
+    "t": [
+      {
+        "label": "prev scene",
+        "color": "green"
+      },
+      {
+        "label": "next scene",
+        "color": "green"
+      },
+      {
+        "label": "prev track",
+        "color": "green"
+      },
+      {
+        "label": "next track",
+        "color": "green"
+      },
+      {
+        "label": "Session mode",
+        "color": ""
+      },
+      {
+        "label": "user 1 Inst.",
+        "color": "amber"
+      },
+      {
+        "label": "user 2 step",
+        "color": ""
+      },
+      {
+        "label": "mixer mode",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "enter scale edition modescale",
+        "color": "amber"
+      },
+      {
+        "label": "undo. long press to redoundo",
+        "color": "amber"
+      },
+      {
+        "label": "octave up",
+        "color": "green"
+      },
+      {
+        "label": "octave down",
+        "color": "green"
+      },
+      {
+        "label": "start/stop selected clip. long press to deletestart stop",
+        "color": "red"
+      },
+      {
+        "label": "lock to tracklock",
+        "color": "red"
+      },
+      {
+        "label": "solo current tracksolo",
+        "color": "amber"
+      },
+      {
+        "label": "session recordoverdub",
+        "color": "red"
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Instrument controller mode table.html"
+}

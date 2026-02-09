@@ -1,0 +1,349 @@
+{
+  "id": "metronome_and_tempo_bottom_row_of_matrix",
+  "name": "Metronome and tempo - bottom row of matrix",
+  "snapshot": {
+    "t": [
+      {
+        "label": "on/off",
+        "color": "green"
+      },
+      {
+        "label": "nudge left",
+        "color": "amber"
+      },
+      {
+        "label": "nudge right",
+        "color": "amber"
+      },
+      {
+        "label": "-5",
+        "color": ""
+      },
+      {
+        "label": "-1",
+        "color": ""
+      },
+      {
+        "label": "+1",
+        "color": ""
+      },
+      {
+        "label": "+5",
+        "color": ""
+      },
+      {
+        "label": "tap",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      },
+      {
+        "label": "",
+        "color": ""
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Metronome and tempo - bottom row of matrix.html"
+}
