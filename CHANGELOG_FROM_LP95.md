@@ -106,3 +106,14 @@
 - Change type: Listener cleanup bug fix
 - Details:
   - Fixed `disconnect()` to clear `self._updateML_listener` (actual field in use) instead of the misspelled/non-existent `self._updateM4L_listener`.
+
+## 2026-02-09 - Add Phase 2.5 pad mapping validator
+
+- File changed: `osd_maps/scripts/validate_pad_mapping.py`
+- Change type: Additive validation script
+- Details:
+  - Added a dedicated mapping validator that checks:
+    - `launchpad_grid.html` exposes all 64 expected pad IDs (`g00..g77`).
+    - `osd_bridge.js` uses row/column to DOM ID mapping in `gRC` format.
+    - MK1 and MK2-family note-to-index conversion formulas are internally consistent for all 64 pads.
+  - Script exits non-zero on mapping errors to support CI/manual validation in Phase 2.5.
