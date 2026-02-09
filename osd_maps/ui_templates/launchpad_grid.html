@@ -344,9 +344,25 @@ function loadSnapshot(dictName){
   });
 }
 
+function loadPadColors(dictName){
+  if(!window.max || typeof window.max.getDict !== 'function') return;
+  window.max.getDict(dictName, function(dictData){
+    if(!dictData || !dictData.pad_rgb) return;
+    var padRgb = dictData.pad_rgb;
+    Object.keys(padRgb).forEach(function(id){
+      var color = padRgb[id] || {};
+      var r = Number(color.r) || 0;
+      var g = Number(color.g) || 0;
+      var b = Number(color.b) || 0;
+      setPadColor(id, r, g, b);
+    });
+  });
+}
+
 function bindMaxInlets(){
   if(!window.max || typeof window.max.bindInlet !== 'function') return;
   window.max.bindInlet('loadSnapshot', loadSnapshot);
+  window.max.bindInlet('padColorsDict', loadPadColors);
   window.max.bindInlet('setTitle', setTitle);
   window.max.bindInlet('setPadColor', setPadColor);
 }

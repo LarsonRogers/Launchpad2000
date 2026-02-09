@@ -47,6 +47,10 @@ var layout_dirty = 1;
 var last_guide_rect = null;
 var pending_mode_id = "";
 var mode_update_task = null;
+var mk2_palette = null;
+var pad_colors_dict_name = "osd_pad_colors";
+var pad_colors_dict = null;
+var last_pad_velocities = [];
 
 var MODE_MAP = {
     "session": {
@@ -237,6 +241,116 @@ function api_get_list(api, property_name) {
     }
 }
 
+function send_status(msg) {
+    try { outlet(2, "status", msg); } catch (e) { }
+}
+
+function read_file_text(path) {
+    var f = null;
+    try {
+        f = new File(path, "read");
+        if (!f || !f.isopen) { return ""; }
+        var out = "";
+        while (f.position < f.eof) {
+            out += f.readstring(f.eof - f.position);
+        }
+        f.close();
+        return out;
+    } catch (e) {
+        try { if (f) { f.close(); } } catch (e2) { }
+        return "";
+    }
+}
+
+function read_json(path) {
+    try {
+        var text = read_file_text(path);
+        if (!text || text.length === 0) { return null; }
+        return JSON.parse(text);
+    } catch (e) {
+        return null;
+    }
+}
+
+function resolve_palette_path() {
+    var base = get_base_dir();
+    var candidates = [];
+    if (base && base.length) {
+        candidates.push(base + "/../osd_maps/palettes/mk2_palette.json");
+        candidates.push(base + "/osd_maps/palettes/mk2_palette.json");
+    }
+    var repo = derive_repo_base();
+    if (repo && repo.length) {
+        candidates.push(repo + "/osd_maps/palettes/mk2_palette.json");
+    }
+    for (var i = 0; i < candidates.length; i++) {
+        var p = candidates[i].replace(/\\/g, "/");
+        var data = read_json(p);
+        if (data) { return { path: p, data: data }; }
+    }
+    return null;
+}
+
+function load_mk2_palette() {
+    var resolved = resolve_palette_path();
+    if (resolved && resolved.data) {
+        mk2_palette = resolved.data;
+        log("mk2 palette loaded: " + resolved.path);
+        send_status("palette_loaded");
+    } else {
+        mk2_palette = null;
+        log("mk2 palette not found");
+        send_status("palette_missing");
+    }
+}
+
+function velocity_to_rgb(velocity) {
+    var key = String(velocity);
+    if (mk2_palette && mk2_palette[key] && mk2_palette[key].length >= 3) {
+        return [
+            Number(mk2_palette[key][0]) || 0,
+            Number(mk2_palette[key][1]) || 0,
+            Number(mk2_palette[key][2]) || 0
+        ];
+    }
+    return [0, 0, 0];
+}
+
+function pad_id_from_index(i) {
+    var row = Math.floor(i / 8);
+    var col = i % 8;
+    return "g" + row + col;
+}
+
+function ensure_pad_dict() {
+    if (!pad_colors_dict) {
+        pad_colors_dict = new Dict(pad_colors_dict_name);
+    }
+}
+
+function push_pad_colors_to_jweb(pad_values) {
+    if (!pad_values || pad_values.length < 64) { return; }
+    ensure_pad_dict();
+    var changed = 0;
+    for (var i = 0; i < 64; i++) {
+        var vel = Number(pad_values[i]) || 0;
+        if (last_pad_velocities[i] !== vel) {
+            last_pad_velocities[i] = vel;
+            changed = 1;
+            var id = pad_id_from_index(i);
+            var rgb = velocity_to_rgb(vel);
+            pad_colors_dict.set("pad_rgb::" + id + "::r", rgb[0]);
+            pad_colors_dict.set("pad_rgb::" + id + "::g", rgb[1]);
+            pad_colors_dict.set("pad_rgb::" + id + "::b", rgb[2]);
+            try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
+        }
+    }
+    if (changed) {
+        pad_colors_dict.set("updated_at", new Date().getTime());
+        try { outlet(1, "padColorsDict", pad_colors_dict_name); } catch (e2) { }
+    }
+}
+
 function bind_info_fields(display) {
     if (!display) { return; }
     try {
@@ -387,10 +501,12 @@ function update(args){
         var attribute_names = api_get_list(l95_osd, "attribute_names");
         var mode_val = safe_item(api_get_list(l95_osd, "mode"), 0, " ");
         var mode_id_val = safe_item(api_get_list(l95_osd, "mode_id"), 0, "");
+        var pad_colors = api_get_list(l95_osd, "pad_colors");
 
         safe_message(mode, "set", mode_val);
         safe_message(info_0, "set", safe_item(info, 0, " "));
         safe_message(info_1, "set", safe_item(info, 1, " "));
+        try { outlet(0, "setTitle", mode_val); } catch (e0) { }
 
         for (i = 0; i < 8; i++) {
             safe_message(att[i], "set", safe_item(attributes, i, " "));
@@ -402,6 +518,7 @@ function update(args){
             pending_mode_id = mode_id_val;
             schedule_mode_assets();
         }
+        push_pad_colors_to_jweb(pad_colors);
 
         sync_guide_rect();
     } catch (e) {
@@ -703,6 +820,7 @@ function start_boot(){
 
 function loadbang(){
     log("loadbang");
+    load_mk2_palette();
     bang();
     start_boot();
 }
