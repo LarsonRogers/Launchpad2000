@@ -1,35 +1,39 @@
-Launchpad95 : Improved Novation Launchpad remote scripts with Instrument Mode, Scales, Step Sequencer and Device Controller.
+# Launchpad2000
 
-These scripts are modified version of Ableton Live 9.0 scripts for Novation Launchpad and provide the same functionality but add support for editing the midi clips using a step sequencer and Device Controller. It also replaces User Mode one with an Instrument Mode mimicking Ableton Push Instrument Mode behaviour.
+Launchpad2000 is a fork of [hdavid/Launchpad95](https://github.com/hdavid/Launchpad95) with additive OSD and Max for Live integration work, while preserving LP95 core behavior.
 
-It does not require any external tool like Max for Live (M4L) in order to work. This script is just a plain Live Control Surface Python Script. 
+## Overview
 
-manual and download : http://motscousus.com/stuff/2011-07_Novation_Launchpad_Ableton_Live_Scripts/
+- Base project: Launchpad95 (improved Novation Launchpad remote scripts)
+- Fork goals:
+  - Stable OSD bridge (`osd_bridge.js`)
+  - JWeb grid renderer support
+  - `mode_id` and `pad_colors` exposure via M4L interface
+- Licensing remains aligned with upstream GPL-3.0 expectations
 
-Launchpad2000 fork notes:
+## Install as `Launchpad2000` in Ableton Live
 
-- This repository is a fork of hdavid/Launchpad95 with additive OSD and M4L integration.
-- To install as Launchpad2000 in Ableton Live:
-  1. Clone or download this repository.
-  2. Rename the folder to `Launchpad2000`.
-  3. Copy it into Ableton's `MIDI Remote Scripts` directory.
-  4. Restart Live and select `Launchpad2000` in Preferences -> Link/Tempo/MIDI.
+1. Clone or download this repository.
+2. Rename the folder to `Launchpad2000`.
+3. Copy it into Ableton's `MIDI Remote Scripts` directory.
+4. Restart Ableton Live.
+5. In `Preferences -> Link/Tempo/MIDI`, select `Launchpad2000` as the Control Surface.
 
-Git remotes for this fork:
+## Git Remotes
 
-- `origin`: https://github.com/LarsonRogers/Launchpad2000.git
-- `upstream`: https://github.com/hdavid/Launchpad95.git
+- `origin`: `https://github.com/LarsonRogers/Launchpad2000.git`
+- `upstream`: `https://github.com/hdavid/Launchpad95.git`
 
 ## Manual Integration Guide (Max/Ableton Tasks)
 
-The remaining project work is mostly runtime integration and validation that cannot be fully automated from source edits alone. Use this section as the step-by-step checklist.
+Most remaining work is runtime integration and validation in Max/Ableton/hardware.
 
-## 1) Build `Launchpad2000_Grid.amxd` in Max
+## 1. Build `Launchpad2000_Grid.amxd` in Max
 
 Goal: create `M4L_Devices/Launchpad2000_Grid.amxd` and wire `osd_bridge.js` to `launchpad_grid.html`.
 
 1. Create a new Max for Live MIDI Effect device.
-2. Save as: `M4L_Devices/Launchpad2000_Grid.amxd`.
+2. Save it as `M4L_Devices/Launchpad2000_Grid.amxd`.
 3. Add objects:
    - `live.thisdevice`
    - `js osd_bridge.js`
@@ -40,112 +44,117 @@ Goal: create `M4L_Devices/Launchpad2000_Grid.amxd` and wire `osd_bridge.js` to `
    - `js osd_bridge.js` outlet 0 -> `jweb` input
    - `js osd_bridge.js` outlet 1 -> `jweb` input
    - `js osd_bridge.js` outlet 2 -> `print osd_bridge`
-5. Ensure device file paths resolve:
+5. Verify these paths resolve:
    - `M4L_Devices/js/osd_bridge.js`
    - `osd_maps/ui_templates/launchpad_grid.html`
    - `osd_maps/palettes/mk2_palette.json`
    - `osd_maps/generated_templates/manifest.json`
-6. Reload the device and verify the Max Console receives bridge status output (not error spam).
+6. Reload the device and confirm the Max Console shows bridge status without recurring errors.
 
-## 2) Verify Ableton Script Discovery as `Launchpad2000`
+## 2. Verify Script Discovery in Ableton
 
-Goal: confirm the fork is discovered under the renamed folder.
+Goal: confirm the fork is discovered as `Launchpad2000`.
 
-1. Ensure repo folder name is exactly `Launchpad2000`.
-2. Place folder in Ableton's MIDI Remote Scripts directory.
+1. Ensure folder name is exactly `Launchpad2000`.
+2. Place folder in the Ableton MIDI Remote Scripts directory.
 3. Restart Ableton Live.
-4. Open Preferences -> Link/Tempo/MIDI.
-5. In Control Surface dropdown, select `Launchpad2000`.
-6. Confirm Launchpad initializes and core LP95 functionality still works.
+4. Open `Preferences -> Link/Tempo/MIDI`.
+5. Select `Launchpad2000` from the Control Surface dropdown.
+6. Confirm Launchpad initializes and baseline LP95 functionality still works.
 
-## 3) Validate Runtime Behavior in Live
+## 3. Runtime Validation in Live
 
-Run these tests in order.
+Run these tests in sequence.
 
 ### A. Template Rendering Coverage (17 templates)
 
-1. Trigger every supported LP95 mode.
-2. Confirm grid/title update for each mode change.
-3. Confirm no missing labels, no tooltip leakage, and no malformed cells.
+1. Trigger each supported LP95 mode.
+2. Confirm grid/title updates for each mode switch.
+3. Confirm no missing labels, no tooltip leakage, no malformed cells.
 
 Pass criteria:
 - All templates render without JS errors.
-- OSD layout stays stable when switching rapidly.
+- Layout remains stable under rapid mode switching.
 
 ### B. Mode Switch Latency
 
-1. Switch between Session, Mixer, Instrument, Device Controller, User1/User2, Step Sequencers.
+1. Switch across Session, Mixer, Instrument, Device Controller, User1/User2, and Step Sequencer modes.
 2. Observe visual update delay.
 
 Pass criteria:
-- Visual mode transition is effectively immediate and under 100 ms.
+- Mode transition appears immediate and remains under ~100 ms.
 
 ### C. Pad Color Mirroring
 
-1. Trigger LP95 pad LED updates (clips, step sequencer states, mute/solo/arm states).
-2. Confirm corresponding grid pads update color in the JWeb renderer.
+1. Trigger LED changes from LP95 workflows (clips, sequencer states, mute/solo/arm states).
+2. Confirm matching grid-pad color updates in JWeb.
 
 Pass criteria:
-- Pad changes are live and continuous.
-- MK2+/X/Mini MK3 colors appear consistent with hardware intent.
+- Pad updates are live and continuous.
+- MK2+/X/Mini MK3 colors are visually consistent with hardware intent.
 
 ### D. Legacy OSD + New Grid Coexistence
 
-1. Run original `Launchpad95OSDHelper.amxd`.
-2. Run `Launchpad2000_Grid.amxd` at the same time.
-3. Use normal workflow and switch modes repeatedly.
+1. Load original `Launchpad95OSDHelper.amxd`.
+2. Load `Launchpad2000_Grid.amxd` simultaneously.
+3. Switch modes and operate normally.
 
 Pass criteria:
-- No crashes, no listener storms, no stuck UI state.
+- No crashes.
+- No listener storms.
+- No stuck or frozen UI state.
 
 ### E. Graceful Degradation
 
 1. Load the grid device while Launchpad2000 control surface is not active.
-2. Check bridge behavior.
+2. Observe bridge behavior.
 
 Pass criteria:
 - Device does not hard-fail.
-- Status output indicates waiting/retry behavior rather than throwing.
+- Status output indicates waiting/retry behavior instead of exceptions.
 
 ### F. Frozen Device Check
 
-1. Freeze/device-package `Launchpad2000_Grid.amxd` in Max.
+1. Freeze/package `Launchpad2000_Grid.amxd` in Max.
 2. Reopen in Live.
 
 Pass criteria:
 - `launchpad_grid.html` loads.
-- Bridge can still route mode and pad updates.
+- Bridge still routes mode and pad updates.
 
-## 4) Regression Checks for LP95 Behavior
+## 4. LP95 Regression Checks
 
-These checks ensure additive changes did not alter upstream behavior.
+Verify additive changes did not alter upstream behavior.
 
-1. Session launch behavior unchanged.
-2. Mixer controls unchanged.
-3. Instrument quick-scale and scale overlays unchanged.
-4. Device Controller behavior unchanged.
-5. Step Sequencer workflows unchanged.
+- Session launch behavior unchanged
+- Mixer controls unchanged
+- Instrument quick-scale and scale overlays unchanged
+- Device Controller behavior unchanged
+- Step Sequencer workflows unchanged
 
 Pass criteria:
-- No control-surface behavior regression relative to baseline LP95.
+- No behavior regressions versus baseline LP95.
 
-## 5) Troubleshooting Checklist
+## 5. Troubleshooting Checklist
 
-1. If OSD does not update, confirm `Launchpad2000` is the selected control surface in Live.
-2. If grid renders but colors do not change, verify `pad_colors` updates are flowing from Python to M4LInterface.
-3. If no template loads, verify `osd_maps/generated_templates/manifest.json` path and mode routes.
-4. If JWeb is blank, verify `launchpad_grid.html` path and that `window.max.outlet('ready')` is firing.
-5. If mode routing is wrong, verify `mode_id` values in Python mode setters and route keys in manifest.
+1. If OSD does not update, verify `Launchpad2000` is selected as control surface in Live.
+2. If grid renders but colors do not change, verify `pad_colors` updates propagate from Python to M4LInterface.
+3. If no template loads, verify `osd_maps/generated_templates/manifest.json` path and route keys.
+4. If JWeb is blank, verify `launchpad_grid.html` path and that `window.max.outlet('ready')` fires.
+5. If mode routing is incorrect, verify Python `mode_id` emitters and manifest route mapping.
 
-## 6) Manual Sign-off Record
-
-Use this mini checklist while validating in Live:
+## 6. Manual Sign-off
 
 - [ ] `Launchpad2000` appears in Ableton control surface list
 - [ ] LP95 baseline behavior preserved
 - [ ] `Launchpad2000_Grid.amxd` built and wired
 - [ ] 17 templates render correctly
-- [ ] mode switch latency < 100 ms
-- [ ] pad colors mirror LED state
-- [ ] coexistence with legacy OSD verified
-- [ ] frozen device loads HTML and routes updates
+- [ ] Mode switch latency < 100 ms
+- [ ] Pad colors mirror LED state
+- [ ] Coexistence with legacy OSD verified
+- [ ] Frozen device loads HTML and routes updates
+
+## Original Launchpad95 Reference
+
+- Legacy manual/download link from upstream context:
+  - `http://motscousus.com/stuff/2011-07_Novation_Launchpad_Ableton_Live_Scripts/`
