@@ -105,8 +105,9 @@ deletes + creates and lose the merge intelligence.
 │  └────────────────────────────────────────────────────────────┘ │
 │                                                                 │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │ M4L Device: Launchpad95OSDHelper.amxd  [hdavid's original] │ │
-│  │  LP95's built-in OSD — ships unchanged with the fork       │ │
+│  │ M4L Device: Launchpad95OSDHelper.amxd [hdavid's original]  │ │
+│  │  LP95's built-in OSD — ships with the fork in M4LDevice/   │ │
+│  │  Working copy also in reference_materials/ for study        │ │
 │  └────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -156,10 +157,6 @@ deletes + creates and lose the merge intelligence.
 │       ├── osd_bridge.js              # Max JS: discovery + mode routing + grid data
 │       └── layout_engine.js           # Max JS: vertical stack layout computation
 │
-│  # ── LP95 original M4L device (comes with the fork, unchanged) ──
-├── M4LDevice/
-│   └── Launchpad95OSDHelper.amxd      # hdavid's original OSD helper (ships as-is)
-│
 ├── osd_maps/
 │   ├── html_templates/                # AUTHORITATIVE: HTML tables from LP95 docs
 │   ├── json_templates/                # CANONICAL: normalized {t,g,s} snapshots
@@ -172,14 +169,22 @@ deletes + creates and lose the merge intelligence.
 │   └── ui_templates/
 │       └── launchpad_grid.html        # JWeb grid renderer
 │
-├── Reference_materials/
-│   ├── M4LDevice/
-│   │   └── L95_ext.js                 # Launchpad98 bridge script (REFERENCE ONLY)
-│   └── LPC_Live_3_prototypes/         # Prototype devices from earlier development
-│       ├── Launchpad95_OSD.amxd/      # JWeb grid prototype (controller.js, renderer.js)
-│       ├── Modern_Launchpad_OSD.amxd/ # Earlier iteration
-│       └── src/                       # Loose maxpat files, layout_engine.js
-│       # NOTE: These prototypes contain useful code to cannibalize
+├── reference_materials/
+│   ├── L95_ext.js                     # Launchpad98 bridge script — PRIMARY refactor source
+│   │                                  # Contains LP95 discovery, mode observation, attribute
+│   │                                  # handling. Has 12 duplicate functions to clean up.
+│   ├── Launchpad95OSDHelper.amxd      # hdavid's WORKING OSD helper (binary — inspect in Max)
+│   │                                  # BEST working example. Study its patcher structure,
+│   │                                  # JS wiring, and LiveAPI usage as the gold standard.
+│   ├── Launchpad98OSD.amxd            # Launchpad98's modified OSD (binary — the device
+│   │                                  # that L95_ext.js was built for)
+│   ├── lpc_live_2_osd/
+│   │   └── LPC-Live 2 OSD.amxd       # Earlier OSD iteration (reference only)
+│   └── LPC_Live_3_prototypes/         # Prototype devices from LPC_Live_3 development
+│       ├── controller.js              # Standalone discovery prototype
+│       ├── Modern_Launchpad_OSD.amxd/ # JWeb grid prototype (controller.js, renderer.js)
+│       └── Reference_materials/       # Nested refs from LPC_Live_3 repo (patcher JSON, etc.)
+│       # NOTE: Prototypes contain useful code patterns to learn from
 │       # (LP95 discovery, template loading, JWeb communication, palette handling)
 │       # but are NOT working devices. Build new devices in Max from scratch.
 │

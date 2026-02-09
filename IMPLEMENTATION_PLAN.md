@@ -65,7 +65,17 @@ no deleting. Document every change in `CHANGELOG_FROM_LP95.md`.
 
 ### 1.2 — Refactor L95_ext.js → osd_bridge.js
 
-Take `Reference_materials/M4LDevice/L95_ext.js` and create a clean `M4L_Devices/js/osd_bridge.js`.
+Take `reference_materials/L95_ext.js` (the Launchpad98 bridge script) and create a
+clean `M4L_Devices/js/osd_bridge.js`.
+
+**Primary reference**: `reference_materials/Launchpad95OSDHelper.amxd` is the best
+working example — study its patcher structure and JS wiring in Max before starting.
+`reference_materials/Launchpad98OSD.amxd` is the device that `L95_ext.js` was built for.
+
+**Prototype reference**: `reference_materials/LPC_Live_3_prototypes/controller.js`
+and `reference_materials/LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/controller.js`
+have useful patterns (retry logic, template caching, palette loading) but are not
+working devices.
 
 **1.2a — Deduplicate**: Remove all 12 first-definition duplicates. Keep DEBUG OVERRIDES
 versions. Remove the markers.
@@ -104,13 +114,16 @@ exceeds ~20 characters.
 - The Launchpad98 device (in the separate Launchpad98 repo) — the working screenshot
   OSD. NOT included in this repo. Users who want it can install it separately.
 
-**What exists as reference code** (in `Reference_materials/`):
+**What exists as reference code** (in `reference_materials/`):
 - `L95_ext.js` — Launchpad98's bridge script. Best reference for LP95 discovery,
   mode observation, and attribute handling.
-- `LPC_Live_3_prototypes/Launchpad95_OSD.amxd/resources/controller.js` — prototype
+- `Launchpad95OSDHelper.amxd` — hdavid's WORKING OSD helper. The gold standard.
+  Open it in Max to study patcher structure, JS wiring, and LiveAPI usage.
+- `Launchpad98OSD.amxd` — the device that L95_ext.js was built for.
+- `LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/controller.js` — prototype
   with LP95 discovery, template loading, JWeb communication, palette handling. Code
   to learn from and cannibalize, but the device itself doesn't work reliably.
-- `LPC_Live_3_prototypes/Launchpad95_OSD.amxd/resources/renderer.js` — prototype
+- `LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/renderer.js` — prototype
   JWeb renderer with resize handling, pad color rendering, MK2 palette support.
 
 **Build approach**: Create the .amxd patcher in Max. Write `osd_bridge.js` and
@@ -137,9 +150,9 @@ Claude Code creates the JS and HTML files; the developer wires them in Max.
   ```
 
 **Reference for wiring**: The prototype at
-`Reference_materials/LPC_Live_3_prototypes/Launchpad95_OSD.amxd/Launchpad95_OSD.maxpat`
-shows one approach. `Reference_materials/M4LDevice/_patcher.json` has the Launchpad98
-patcher structure.
+`reference_materials/LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/Modern_Launchpad_OSD.maxpat`
+shows one approach. The working `reference_materials/Launchpad95OSDHelper.amxd`
+is the best model — open it in Max to see how hdavid wired the JS and LiveAPI.
 
 ### 2.2 — launchpad_grid.html
 
@@ -197,7 +210,12 @@ Use LP95's `Settings.py` for definitive note/CC assignments.
    line. Document every change in CHANGELOG_FROM_LP95.md."
 
 3. "Create M4L_Devices/js/osd_bridge.js by refactoring
-   Reference_materials/M4LDevice/L95_ext.js:
+   reference_materials/L95_ext.js (the Launchpad98 bridge script).
+   The best working OSD device is reference_materials/Launchpad95OSDHelper.amxd
+   (hdavid's original) — study its approach as the gold standard.
+   Also read reference_materials/LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/
+   resources/controller.js for useful patterns (retry logic, template caching).
+   Refactor tasks:
    - Remove all 12 duplicate function definitions (keep second versions)
    - Read mode_id from M4LInterface first, string-match fallback only
    - Refactor att_0..att_7 into arrays
@@ -219,7 +237,7 @@ Use LP95's `Settings.py` for definitive note/CC assignments.
 ```
 1. "Create osd_maps/ui_templates/launchpad_grid.html based on
    launchpad_osd_base_template.html. Also read the prototype renderer at
-   Reference_materials/LPC_Live_3_prototypes/Launchpad95_OSD.amxd/resources/renderer.js
+   reference_materials/LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/renderer.js
    for patterns (resize reporting, palette handling, pad color rendering).
    Add window.max.bindInlet handlers for loadSnapshot, setTitle, setPadColor.
    Extend setColor for MK2+ RGB. Emit window.max.outlet('ready') on load."
@@ -228,7 +246,7 @@ Use LP95's `Settings.py` for definitive note/CC assignments.
    capture LED velocities. Document in CHANGELOG_FROM_LP95.md."
 
 3. "Add pad color observation to osd_bridge.js. Also read the prototype
-   controller at Reference_materials/LPC_Live_3_prototypes/Launchpad95_OSD.amxd/
+   controller at reference_materials/LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/
    resources/controller.js for patterns (palette loading, template caching,
    LP95 discovery with retry). Read pad_colors, convert velocity→RGB via
    mk2_palette.json, batch into Dict, send to JWeb."

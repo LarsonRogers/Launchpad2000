@@ -119,11 +119,15 @@ window.max.outlet("modeChanged", "session");
 - Files inside a frozen .amxd
 
 ### Prototype Reference Code
-`Reference_materials/LPC_Live_3_prototypes/` contains earlier prototype devices.
-These are NOT working devices — they're reference material to read before writing new code:
-- `controller.js` — LP95 discovery, retry logic, template caching, palette loading
-- `renderer.js` — JWeb resize reporting, pad color rendering, MK2 palette support
-- `osd_window.js` — window state management
+`reference_materials/` contains working devices and earlier prototypes:
+- `Launchpad95OSDHelper.amxd` — hdavid's WORKING OSD helper. The gold standard.
+  Open in Max to study patcher structure, JS wiring, LiveAPI usage.
+- `L95_ext.js` — Launchpad98 bridge script. Primary source for osd_bridge.js refactor.
+- `Launchpad98OSD.amxd` — the device that L95_ext.js modifies.
+- `LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/controller.js` —
+  LP95 discovery, retry logic, template caching, palette loading
+- `LPC_Live_3_prototypes/Modern_Launchpad_OSD.amxd/resources/renderer.js` —
+  JWeb resize reporting, pad color rendering, MK2 palette support
 Read these before writing `osd_bridge.js` and `launchpad_grid.html`. Adapt patterns
 to the current architecture, don't copy blindly.
 

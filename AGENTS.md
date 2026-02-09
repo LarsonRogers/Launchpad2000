@@ -44,7 +44,12 @@ Launchpad2000 is a GitHub fork of `hdavid/Launchpad95` (GPL-3.0) that adds:
 
 The LP95 Python files live at the repo root in their original locations so that
 `git merge upstream/master` works cleanly. Our additions live in separate
-directories: `M4L_Devices/`, `osd_maps/`, `Reference_materials/`.
+directories: `M4L_Devices/`, `osd_maps/`, `reference_materials/`.
+
+**Key reference files** (in `reference_materials/`):
+- `Launchpad95OSDHelper.amxd` — hdavid's WORKING OSD. The gold standard. Study in Max.
+- `L95_ext.js` — Launchpad98 bridge script. Primary source for osd_bridge.js refactor.
+- `LPC_Live_3_prototypes/` — earlier prototypes with useful code patterns (not working devices).
 
 ## File Editing Rules
 
