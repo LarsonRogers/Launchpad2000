@@ -95,4 +95,14 @@
     - MK2/MK3/LPX note layout (`81..88`, `71..78`, ... `11..18`)
   - Added `_update_pad_colors_from_midi(midi_bytes)` helper to watch outgoing note-on LED messages (`0x90`) and store velocity values into `self._osd.pad_colors[index]`.
   - Updated `_send_midi(...)` to call `_update_pad_colors_from_midi(midi_bytes)` only after successful MIDI send.
-  - Triggered `self._osd.update()` only when a pad value changes.
+  - Added a debounced update scheduler:
+    - `_schedule_pad_colors_update()` coalesces repeated LED changes into one scheduled update tick.
+    - `_flush_pad_colors_update()` performs the actual `self._osd.update()`.
+  - This preserves live updates while reducing high-frequency UI update pressure.
+
+## 2026-02-09 - Fix M4LInterface disconnect listener field name
+
+- File changed: `M4LInterface.py`
+- Change type: Listener cleanup bug fix
+- Details:
+  - Fixed `disconnect()` to clear `self._updateML_listener` (actual field in use) instead of the misspelled/non-existent `self._updateM4L_listener`.

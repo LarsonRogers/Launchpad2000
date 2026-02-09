@@ -81,6 +81,7 @@ class Launchpad(ControlSurface):
 			self._wrote_user_byte = False
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
 			self._init_done = False
+			self._pad_colors_update_pending = False
 		# caller will send challenge and we will continue as challenge is received.
 		
 			
@@ -356,6 +357,17 @@ class Launchpad(ControlSurface):
 			return
 		if self._osd.pad_colors[pad_index] != velocity:
 			self._osd.pad_colors[pad_index] = velocity
+			self._schedule_pad_colors_update()
+
+	def _schedule_pad_colors_update(self):
+		if self._pad_colors_update_pending:
+			return
+		self._pad_colors_update_pending = True
+		self.schedule_message(1, self._flush_pad_colors_update)
+
+	def _flush_pad_colors_update(self):
+		self._pad_colors_update_pending = False
+		if self._osd is not None:
 			self._osd.update()
 
 	def _update_hardware(self):
