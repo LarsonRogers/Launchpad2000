@@ -78,6 +78,11 @@ class ConfigurableButtonElement(ButtonElement):
 		elif value is OFF_VALUE:
 			self._do_send_off_value(**k)
 		elif type(value) is int:
+			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+				try:
+					self._control_surface._update_pad_color_from_index(self._lp_pad_index, value)
+				except Exception:
+					pass
 			super(ConfigurableButtonElement, self).send_value(value, **k)
 		else:
 			self._draw_skin(value)
@@ -86,7 +91,15 @@ class ConfigurableButtonElement(ButtonElement):
 		super(ConfigurableButtonElement, self).set_identifier(identifier)
 		if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
 			try:
-				self._control_surface._update_note_to_pad_index(identifier, self._lp_pad_index)
+				ch = None
+				try:
+					ch = self.message_channel()
+				except Exception:
+					try:
+						ch = self._msg_channel
+					except Exception:
+						ch = None
+				self._control_surface._update_note_to_pad_index(identifier, self._lp_pad_index, ch)
 			except Exception:
 				pass
 			

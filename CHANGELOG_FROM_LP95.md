@@ -203,11 +203,32 @@
 - Details:
   - Captured top/side LED colors from outgoing MIDI (CC + side-note LEDs) into `button_colors`.
   - Added `clear_pad_colors()` to reset OSD colors and dynamic map when leaving instrument mode.
+  - Ignore unmapped notes in dynamic (instrument) mode to prevent session LED overlap.
+  - Use channel-aware dynamic mapping so instrument notes and UI overlays do not collide.
+  - Added a note-only fallback map for dynamic notes and avoid overwriting it with non-feedback channel 15.
+  - Added `clear_pad_grid_colors()` to clear grid colors without touching button colors.
+  - Prefer the note-only dynamic map before channel-aware lookup to keep instrument pads aligned when channel metadata is missing or inconsistent.
+  - Added a matrix scan fallback to resolve dynamic note→pad mapping when cached maps are out of sync.
+  - Treat channel 15 (non-feedback) LED updates as static grid notes to align instrument UI with device output.
+  - Match matrix scan by both note and channel and prefer channel-aware mapping before note-only fallback.
+  - Added direct pad color updates from grid buttons and skip note-mapped updates in instrument mode.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive OSD updates
+- Details:
+  - When a grid button sends an integer LED value, update the OSD pad color directly using the pad index.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive note mapping metadata
+- Details:
+  - Pass the current MIDI channel to the control surface when identifiers change so note-to-pad mapping can be channel-aware.
 
 - File changed: `MainSelectorComponent.py`
 - Change type: Additive mode cleanup
 - Details:
   - Track instrument controller active state and clear OSD pad/button colors when instrument mode is disabled.
+  - Clear OSD pad/button colors when instrument mode is enabled to avoid mixed view with previous mode.
+  - Use `clear_pad_grid_colors()` so top/side button colors remain intact.
 
 - File changed: `M4L_Devices/js/osd_bridge.js`
 - Change type: Additive UI syncing
@@ -216,3 +237,4 @@
   - Clear template colors (t/s/g) on snapshot load to avoid stale color bleed between modes.
   - Reapply current pad/button colors immediately after snapshot load to prevent the grid from reverting to grey.
   - Do not force template colors to black (remove `color` from snapshot cells) so live pad colors are not wiped after label loads.
+  - Keep top/side template colors (t/s) while stripping grid colors (g), so button labels can show intended colors even when hardware LEDs are not updating.

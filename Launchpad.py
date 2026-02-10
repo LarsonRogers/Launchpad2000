@@ -82,6 +82,7 @@ class Launchpad(ControlSurface):
 			self._osd = None
 			self._static_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index = {}
+			self._dynamic_note_to_pad_index_by_note = {}
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
 			self._init_done = False
 			self._pad_colors_update_pending = False
@@ -122,6 +123,7 @@ class Launchpad(ControlSurface):
 			self._user_byte_write_button.add_value_listener(self._user_byte_value)
 			matrix = ButtonMatrixElement()
 			matrix.name = 'Button_Matrix'
+			self._matrix = matrix
 			for row in range(8):
 				button_row = []
 				for column in range(8):
@@ -383,12 +385,14 @@ class Launchpad(ControlSurface):
 		if hasattr(self._osd, "pad_colors"):
 			for i in range(len(self._osd.pad_colors)):
 				self._osd.pad_colors[i] = 0
-		if hasattr(self._osd, "button_colors"):
-			for i in range(len(self._osd.button_colors)):
-				self._osd.button_colors[i] = 0
 		if hasattr(self, "_dynamic_note_to_pad_index"):
 			self._dynamic_note_to_pad_index = {}
+		if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			self._dynamic_note_to_pad_index_by_note = {}
 		self._schedule_pad_colors_update()
+
+	def clear_pad_grid_colors(self):
+		self.clear_pad_colors()
 
 	def _use_dynamic_note_map(self):
 		try:
@@ -409,20 +413,104 @@ class Launchpad(ControlSurface):
 			return False
 		return False
 
-	def _pad_index_from_note(self, note):
+	def _get_matrix_button_id(self, button):
+		try:
+			return int(button.message_identifier()) & 127
+		except Exception:
+			try:
+				return int(button._msg_identifier) & 127
+			except Exception:
+				return None
+
+	def _get_matrix_button_channel(self, button):
+		try:
+			return int(button.message_channel()) & 15
+		except Exception:
+			try:
+				return int(button._msg_channel) & 15
+			except Exception:
+				return None
+
+	def _find_pad_index_in_matrix(self, note, channel=None):
+		matrix = None
+		try:
+			if self._selector is not None and hasattr(self._selector, "_matrix"):
+				matrix = self._selector._matrix
+		except Exception:
+			matrix = None
+		if matrix is None and hasattr(self, "_matrix"):
+			matrix = self._matrix
+		if matrix is None:
+			return -1
+		for button, (x, y) in matrix.iterbuttons():
+			if not button or (not hasattr(button, "_lp_pad_index")):
+				continue
+			btn_id = self._get_matrix_button_id(button)
+			if btn_id is None:
+				continue
+			if channel is not None:
+				btn_ch = self._get_matrix_button_channel(button)
+				if btn_ch is None or int(btn_ch) != int(channel):
+					continue
+			if btn_id == note:
+				return button._lp_pad_index
+		return -1
+
+	def _note_map_key(self, note, channel):
+		try:
+			n = int(note) & 127
+		except Exception:
+			return None
+		try:
+			c = int(channel) & 15
+		except Exception:
+			return None
+		return (c << 8) + n
+
+	def _pad_index_from_note(self, note, channel=None):
 		note = int(note) & 127
 		use_dynamic = False
 		try:
 			use_dynamic = self._use_dynamic_note_map()
 		except Exception:
 			use_dynamic = False
+		try:
+			ch = int(channel) & 15
+		except Exception:
+			ch = None
+		if use_dynamic and ch == 15:
+			if hasattr(self, "_static_note_to_pad_index"):
+				try:
+					idx = self._static_note_to_pad_index.get(note, -1)
+				except Exception:
+					idx = -1
+				if idx is not None and idx >= 0 and idx < 64:
+					return idx
 		if use_dynamic and hasattr(self, "_dynamic_note_to_pad_index"):
 			try:
-				idx = self._dynamic_note_to_pad_index.get(note, -1)
+				key = self._note_map_key(note, channel)
+				if key is None:
+					idx = -1
+				else:
+					idx = self._dynamic_note_to_pad_index.get(key, -1)
 			except Exception:
 				idx = -1
 			if idx is not None and idx >= 0 and idx < 64:
 				return idx
+			idx = self._find_pad_index_in_matrix(note, channel)
+			if idx is not None and idx >= 0 and idx < 64:
+				if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+					self._dynamic_note_to_pad_index_by_note[note] = idx
+				return idx
+			if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+				try:
+					idx = self._dynamic_note_to_pad_index_by_note.get(note, -1)
+				except Exception:
+					idx = -1
+				if idx is not None and idx >= 0 and idx < 64:
+					return idx
+			# In dynamic (instrument) mode, ignore notes not mapped to pads.
+			return -1
 		if (not use_dynamic) and hasattr(self, "_static_note_to_pad_index"):
 			try:
 				idx = self._static_note_to_pad_index.get(note, -1)
@@ -451,7 +539,7 @@ class Launchpad(ControlSurface):
 				return row * 8 + col
 		return -1
 
-	def _update_note_to_pad_index(self, note, pad_index):
+	def _update_note_to_pad_index(self, note, pad_index, channel=None):
 		try:
 			n = int(note)
 		except Exception:
@@ -460,7 +548,20 @@ class Launchpad(ControlSurface):
 			return
 		if not hasattr(self, "_dynamic_note_to_pad_index"):
 			self._dynamic_note_to_pad_index = {}
-		self._dynamic_note_to_pad_index[n] = pad_index
+		key = self._note_map_key(n, channel)
+		if key is not None:
+			self._dynamic_note_to_pad_index[key] = pad_index
+		if not hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			self._dynamic_note_to_pad_index_by_note = {}
+		if channel is None:
+			self._dynamic_note_to_pad_index_by_note[n] = pad_index
+		else:
+			try:
+				ch = int(channel) & 15
+			except Exception:
+				ch = None
+			if ch is None or ch != 15:
+				self._dynamic_note_to_pad_index_by_note[n] = pad_index
 		if not hasattr(self, "_note_to_pad_index"):
 			self._note_to_pad_index = {}
 		self._note_to_pad_index[n] = pad_index
@@ -470,7 +571,9 @@ class Launchpad(ControlSurface):
 			return
 		if midi_bytes is None or len(midi_bytes) < 3:
 			return
-		status = int(midi_bytes[0]) & 240
+		status_byte = int(midi_bytes[0])
+		status = status_byte & 240
+		channel = status_byte & 15
 		if status == 176:
 			cc = int(midi_bytes[1]) & 127
 			value = int(midi_bytes[2]) & 127
@@ -491,11 +594,32 @@ class Launchpad(ControlSurface):
 		if btn_index >= 0:
 			self._update_button_colors(btn_index, velocity)
 			return
-		pad_index = self._pad_index_from_note(note)
+		in_dynamic = False
+		try:
+			in_dynamic = self._use_dynamic_note_map()
+		except Exception:
+			in_dynamic = False
+		pad_index = self._pad_index_from_note(note, channel)
 		if pad_index < 0 or pad_index >= 64:
+			return
+		if in_dynamic:
 			return
 		if self._osd.pad_colors[pad_index] != velocity:
 			self._osd.pad_colors[pad_index] = velocity
+			self._schedule_pad_colors_update()
+
+	def _update_pad_color_from_index(self, pad_index, velocity):
+		if self._osd is None or not hasattr(self._osd, "pad_colors"):
+			return
+		try:
+			idx = int(pad_index)
+		except Exception:
+			return
+		if idx < 0 or idx >= 64:
+			return
+		val = int(velocity) & 127
+		if self._osd.pad_colors[idx] != val:
+			self._osd.pad_colors[idx] = val
 			self._schedule_pad_colors_update()
 
 	def _schedule_pad_colors_update(self):

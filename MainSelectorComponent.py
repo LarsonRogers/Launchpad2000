@@ -473,6 +473,11 @@ class MainSelectorComponent(ModeSelectorComponent):
 	def _setup_instrument_controller(self, as_active):
 		if self._instrument_controller != None:
 			if as_active:
+				if (not self._instrument_was_active) and self._control_surface is not None:
+					try:
+						self._control_surface.clear_pad_grid_colors()
+					except Exception:
+						pass
 				self._activate_matrix(False) #Disable matrix buttons (clip slots)
 				self._activate_scene_buttons(True)#Enable side buttons
 				self._activate_navigation_buttons(True)#Enable nav buttons
@@ -480,7 +485,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 			else:
 				if self._instrument_was_active and self._control_surface is not None:
 					try:
-						self._control_surface.clear_pad_colors()
+						self._control_surface.clear_pad_grid_colors()
 					except Exception:
 						pass
 				self._instrument_was_active = False
