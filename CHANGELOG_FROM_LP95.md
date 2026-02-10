@@ -267,3 +267,4 @@
 - Details:
   - Pre-create per-pad dictionaries (`g00..g77`, `t0..t7`, `s0..s7`) on load to avoid `dictwrap` errors when patchers access them before LED updates.
   - Populate per-pad dicts with `r/g/b` values alongside the existing `osd_pad_colors` and `pad_rgb` dicts.
+  - Force dictionary creation at script load (not just `loadbang`) so patcher dictwrap objects can bind immediately.

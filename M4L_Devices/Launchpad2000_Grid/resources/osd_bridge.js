@@ -80,6 +80,9 @@ var MK1_COLOR_GREEN = [45, 191, 110];
 var MK1_COLOR_AMBER = [240, 164, 67];
 var MK1_DIM_FACTOR = 0.55;
 
+// Ensure pad dictionaries exist as soon as the script loads (before patcher access).
+ensure_pad_dict();
+
 var MODE_MAP = {
     "session": {
         "screenshot": "Session Mode.png",
