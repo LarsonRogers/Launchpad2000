@@ -455,6 +455,9 @@ class MainSelectorComponent(ModeSelectorComponent):
 			self._zooming.set_scene_bank_buttons(None)
 			self._zooming.set_nav_buttons(None, None, None, None)
 
+		if as_active:
+			self._session._update_OSD()
+
 		if as_navigation_enabled: # nav buttons (track/scene)
 			self._session.set_track_bank_buttons(self._nav_buttons[3], self._nav_buttons[2])
 			self._session.set_scene_bank_buttons(self._nav_buttons[1], self._nav_buttons[0])

@@ -1,0 +1,349 @@
+{
+  "id": "session_mode",
+  "name": "Session Mode",
+  "snapshot": {
+    "t": [
+      {
+        "label": "scenes up",
+        "color": "green"
+      },
+      {
+        "label": "scenes down",
+        "color": "green"
+      },
+      {
+        "label": "tracks left",
+        "color": "green"
+      },
+      {
+        "label": "tracks right",
+        "color": "green"
+      },
+      {
+        "label": "Session mode",
+        "color": "amber"
+      },
+      {
+        "label": "user 1 Inst.",
+        "color": "amber"
+      },
+      {
+        "label": "user 2 step",
+        "color": "amber"
+      },
+      {
+        "label": "mixer mode",
+        "color": "amber"
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": "amber"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ],
+      [
+        {
+          "label": "",
+          "color": "red"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      },
+      {
+        "label": "scene",
+        "color": ""
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Session Mode.html"
+}

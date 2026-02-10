@@ -117,3 +117,76 @@
     - `osd_bridge.js` uses row/column to DOM ID mapping in `gRC` format.
     - MK1 and MK2-family note-to-index conversion formulas are internally consistent for all 64 pads.
   - Script exits non-zero on mapping errors to support CI/manual validation in Phase 2.5.
+
+## 2026-02-09 - Guard OSD availability during early hardware challenge
+
+- File changed: `Launchpad.py`
+- Change type: Additive startup guard
+- Details:
+  - Initialized `self._osd = None` in `__init__` so `_update_pad_colors_from_midi()` can safely run during the early `_send_challenge()` path before `init()` creates the M4LInterface instance.
+
+## 2026-02-09 - Add screenshots_dir to M4LInterface for OSD bridge
+
+- File changed: `M4LInterface.py`
+- Change type: Additive property for LiveAPI consumers
+- Details:
+  - Added `self.screenshots_dir = ''` in `__init__` so Max JS can query the property without LiveAPI errors (used by `osd_bridge.js`).
+
+## 2026-02-09 - Expose hardware_model for palette selection
+
+- File changed: `M4LInterface.py`
+- Change type: Additive property for LiveAPI consumers
+- Details:
+  - Added `self.hardware_model = ''` in `__init__` to expose the detected Launchpad model to Max JS.
+
+- File changed: `Launchpad.py`
+- Change type: Additive hardware metadata
+- Details:
+  - Set `self._osd.hardware_model` during `init()` based on detected hardware flags (`mk1`/`mk2`/`mk3`/`lpx`).
+
+## 2026-02-09 - Improve pad mapping for instrument mode LEDs
+
+- File changed: `Launchpad.py`
+- Change type: Additive mapping cache
+- Details:
+  - Added `self._note_to_pad_index` cache and prefilled it for grid buttons at init.
+  - Added `_update_note_to_pad_index()` and used it in `_pad_index_from_note()` to map dynamic identifiers.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive identifier hook
+- Details:
+  - Overrode `set_identifier()` to update the control surface note→pad mapping when identifiers change (e.g., instrument mode).
+
+## 2026-02-09 - Add Pro Session mode_id routing for OSD
+
+- File changed: `SpecialProSessionComponent.py`
+- Change type: Additive OSD mode updates
+- Details:
+  - Added `_resolve_pro_mode_id()` to map pro-session submodes.
+  - Added `_update_OSD()` override to set `mode`/`mode_id` when pro session is active.
+
+## 2026-02-09 - Improve OSD mode accuracy and LED clearing
+
+- File changed: `SpecialProSessionComponent.py`
+- Change type: Adjust pro-session submode selection
+- Details:
+  - Restrict submode `mode_id` selection to active button presses only (avoid sticky launch quantization/record-mode states).
+
+- File changed: `MainSelectorComponent.py`
+- Change type: Additive OSD refresh
+- Details:
+  - Call `_session._update_OSD()` after session setup to ensure OSD reflects pro-session toggle state.
+
+- File changed: `Launchpad.py`
+- Change type: Additive LED state handling
+- Details:
+  - Process note-off messages (or note-on velocity 0) in `_update_pad_colors_from_midi()` to clear stale pad colors between modes.
+
+## 2026-02-10 - Use static vs dynamic pad maps to prevent cross-mode bleed
+
+- File changed: `Launchpad.py`
+- Change type: Additive mapping selection
+- Details:
+  - Added `_use_dynamic_note_map()` to enable dynamic note-to-pad mapping only when the instrument controller is active.
+  - `_pad_index_from_note()` now selects between `_dynamic_note_to_pad_index` and `_static_note_to_pad_index` before falling back to legacy mapping.
+  - `_update_note_to_pad_index()` now updates the dynamic map alongside the legacy cache.

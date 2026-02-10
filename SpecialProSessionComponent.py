@@ -1454,3 +1454,30 @@ class SpecialProSessionComponent(SpecialSessionComponent):
 	#		if self._shift_button != None and not self._shift_pressed:
 	#			self._shift_button.send_value(SHIFT_COLORS[self._shift_color_index])
 	#			self._shift_color_index = ((self._shift_color_index+1)%SHIFT_COLORS_LEN)
+
+	def _resolve_pro_mode_id(self):
+		if self._record_pressed:
+			return "pro_session_arm"
+		if self._duplicate_pressed:
+			return "pro_session_solo"
+		if self._delete_pressed:
+			return "pro_session_mute"
+		if self._double_pressed:
+			return "pro_session_fixed_length"
+		if self._quantize_pressed:
+			return "pro_session_record_quant"
+		if self._shift_pressed:
+			return "pro_session_launch_quant"
+		if self._click_pressed:
+			if self._tap_button != None:
+				return "pro_session_tempo"
+			return "pro_session_metronome"
+		return "pro_session"
+
+	def _update_OSD(self):
+		if self._osd != None:
+			SpecialSessionComponent._update_OSD(self)
+			if self._is_pro_mode_on():
+				self._osd.mode = "Pro Session"
+				self._osd.mode_id = self._resolve_pro_mode_id()
+				self._osd.update()

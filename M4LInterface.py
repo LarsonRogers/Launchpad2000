@@ -9,6 +9,8 @@ class M4LInterface(ControlSurfaceComponent):
 		self._updateML_listener = None
 		self.mode = ' '
 		self.mode_id = ''
+		self.hardware_model = ''
+		self.screenshots_dir = ''
 		self.pad_colors = [0 for _ in range(64)]
 		self.clear()
 

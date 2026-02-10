@@ -79,6 +79,9 @@ class Launchpad(ControlSurface):
 			self._user_byte_write_button = None
 			self._config_button = None
 			self._wrote_user_byte = False
+			self._osd = None
+			self._static_note_to_pad_index = {}
+			self._dynamic_note_to_pad_index = {}
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
 			self._init_done = False
 			self._pad_colors_update_pending = False
@@ -129,6 +132,9 @@ class Launchpad(ControlSurface):
 						midi_note = row * 16 + column
 					button = ConfigurableButtonElement(is_momentary, MIDI_NOTE_TYPE, 0, midi_note, skin = self._skin, control_surface = self)
 					button.name = str(column) + '_Clip_' + str(row) + '_Button'
+					button._lp_pad_index = row * 8 + column
+					self._static_note_to_pad_index[int(midi_note) & 127] = button._lp_pad_index
+					self._dynamic_note_to_pad_index[int(midi_note) & 127] = button._lp_pad_index
 					button_row.append(button)
 				matrix.add_row(tuple(button_row))
 
@@ -157,6 +163,14 @@ class Launchpad(ControlSurface):
 			side_buttons[7].name = 'Arm_Button'
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
+			if self._lpx:
+				self._osd.hardware_model = "lpx"
+			elif self._mk3_rgb:
+				self._osd.hardware_model = "mk3"
+			elif self._mk2_rgb:
+				self._osd.hardware_model = "mk2"
+			else:
+				self._osd.hardware_model = "mk1"
 			self._init_note_repeat()
 			try:
 				self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat, self._c_instance)
@@ -325,8 +339,53 @@ class Launchpad(ControlSurface):
 				self._update_pad_colors_from_midi(midi_bytes)
 		return sent_successfully
 
+	def _use_dynamic_note_map(self):
+		try:
+			if self._selector is None:
+				return False
+			try:
+				instrument_controller = getattr(self._selector, "_instrument_controller", None)
+			except Exception:
+				instrument_controller = None
+			if instrument_controller is not None and instrument_controller.is_enabled():
+				return True
+			if hasattr(self._selector, "_main_mode_index") and hasattr(self._selector, "_sub_mode_list"):
+				if self._selector._main_mode_index == 1:
+					sub_index = self._selector._sub_mode_list[self._selector._main_mode_index]
+					if sub_index == 0:
+						return True
+		except Exception:
+			return False
+		return False
+
 	def _pad_index_from_note(self, note):
 		note = int(note) & 127
+		use_dynamic = False
+		try:
+			use_dynamic = self._use_dynamic_note_map()
+		except Exception:
+			use_dynamic = False
+		if use_dynamic and hasattr(self, "_dynamic_note_to_pad_index"):
+			try:
+				idx = self._dynamic_note_to_pad_index.get(note, -1)
+			except Exception:
+				idx = -1
+			if idx is not None and idx >= 0 and idx < 64:
+				return idx
+		if (not use_dynamic) and hasattr(self, "_static_note_to_pad_index"):
+			try:
+				idx = self._static_note_to_pad_index.get(note, -1)
+			except Exception:
+				idx = -1
+			if idx is not None and idx >= 0 and idx < 64:
+				return idx
+		if hasattr(self, "_note_to_pad_index"):
+			try:
+				idx = self._note_to_pad_index.get(note, -1)
+			except Exception:
+				idx = -1
+			if idx is not None and idx >= 0 and idx < 64:
+				return idx
 		if self._mk2_rgb or self._mk3_rgb or self._lpx:
 			# MK2/MK3/LPX grid notes: 81..88, 71..78, ... 11..18
 			row = (89 - note) // 10
@@ -341,17 +400,35 @@ class Launchpad(ControlSurface):
 				return row * 8 + col
 		return -1
 
+	def _update_note_to_pad_index(self, note, pad_index):
+		try:
+			n = int(note)
+		except Exception:
+			return
+		if n < 0 or n > 127:
+			return
+		if not hasattr(self, "_dynamic_note_to_pad_index"):
+			self._dynamic_note_to_pad_index = {}
+		self._dynamic_note_to_pad_index[n] = pad_index
+		if not hasattr(self, "_note_to_pad_index"):
+			self._note_to_pad_index = {}
+		self._note_to_pad_index[n] = pad_index
+
 	def _update_pad_colors_from_midi(self, midi_bytes):
 		if self._osd is None or not hasattr(self._osd, "pad_colors"):
 			return
 		if midi_bytes is None or len(midi_bytes) < 3:
 			return
 		status = int(midi_bytes[0]) & 240
-		# Grid LEDs are sent as note-on values (velocity carries the color index).
-		if status != 144:
+		# Grid LEDs use note-on velocity; note-off (or note-on velocity 0) means off.
+		if status == 128:
+			note = int(midi_bytes[1]) & 127
+			velocity = 0
+		elif status == 144:
+			note = int(midi_bytes[1]) & 127
+			velocity = int(midi_bytes[2]) & 127
+		else:
 			return
-		note = int(midi_bytes[1]) & 127
-		velocity = int(midi_bytes[2]) & 127
 		pad_index = self._pad_index_from_note(note)
 		if pad_index < 0 or pad_index >= 64:
 			return

@@ -81,6 +81,14 @@ class ConfigurableButtonElement(ButtonElement):
 			super(ConfigurableButtonElement, self).send_value(value, **k)
 		else:
 			self._draw_skin(value)
+
+	def set_identifier(self, identifier):
+		super(ConfigurableButtonElement, self).set_identifier(identifier)
+		if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+			try:
+				self._control_surface._update_note_to_pad_index(identifier, self._lp_pad_index)
+			except Exception:
+				pass
 			
 	def force_next_send(self):
 		"""

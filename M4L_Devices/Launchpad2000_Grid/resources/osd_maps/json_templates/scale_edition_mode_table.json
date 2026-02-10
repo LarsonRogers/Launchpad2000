@@ -1,0 +1,349 @@
+{
+  "id": "scale_edition_mode_table",
+  "name": "Scale Edition Mode Table",
+  "snapshot": {
+    "t": [
+      {
+        "label": "prev scene",
+        "color": "green"
+      },
+      {
+        "label": "next scene",
+        "color": "green"
+      },
+      {
+        "label": "prev track",
+        "color": "green"
+      },
+      {
+        "label": "next track",
+        "color": "green"
+      },
+      {
+        "label": "Session mode",
+        "color": ""
+      },
+      {
+        "label": "user 1 Inst.",
+        "color": "amber"
+      },
+      {
+        "label": "user 2 step",
+        "color": ""
+      },
+      {
+        "label": "mixer mode",
+        "color": ""
+      }
+    ],
+    "g": [
+      [
+        {
+          "label": "absolute root",
+          "color": "amber"
+        },
+        {
+          "label": "orient.",
+          "color": "amber"
+        },
+        {
+          "label": "chromatic guitar",
+          "color": "red"
+        },
+        {
+          "label": "diatonic sequent",
+          "color": "red"
+        },
+        {
+          "label": "diatonic 3rd",
+          "color": "red"
+        },
+        {
+          "label": "diatonic 4th",
+          "color": "red"
+        },
+        {
+          "label": "chromatic",
+          "color": "red"
+        },
+        {
+          "label": "drumrack",
+          "color": "red"
+        }
+      ],
+      [
+        {
+          "label": "C#",
+          "color": "amber"
+        },
+        {
+          "label": "D#",
+          "color": "amber"
+        },
+        {
+          "label": "relative scale",
+          "color": "red"
+        },
+        {
+          "label": "F#",
+          "color": "amber"
+        },
+        {
+          "label": "G#",
+          "color": "amber"
+        },
+        {
+          "label": "A#",
+          "color": "amber"
+        },
+        {
+          "label": "5th left",
+          "color": "red"
+        },
+        {
+          "label": "quick scale mode",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "C",
+          "color": "amber"
+        },
+        {
+          "label": "D",
+          "color": "amber"
+        },
+        {
+          "label": "E",
+          "color": "amber"
+        },
+        {
+          "label": "F",
+          "color": "amber"
+        },
+        {
+          "label": "G",
+          "color": "amber"
+        },
+        {
+          "label": "A",
+          "color": "amber"
+        },
+        {
+          "label": "B",
+          "color": "amber"
+        },
+        {
+          "label": "5th right",
+          "color": "red"
+        }
+      ],
+      [
+        {
+          "label": "-2",
+          "color": "red"
+        },
+        {
+          "label": "-1",
+          "color": "red"
+        },
+        {
+          "label": "0",
+          "color": "red"
+        },
+        {
+          "label": "1",
+          "color": "red"
+        },
+        {
+          "label": "2",
+          "color": "red"
+        },
+        {
+          "label": "3",
+          "color": "red"
+        },
+        {
+          "label": "4",
+          "color": "red"
+        },
+        {
+          "label": "5",
+          "color": "red"
+        }
+      ],
+      [
+        {
+          "label": "Major",
+          "color": "green"
+        },
+        {
+          "label": "Minor",
+          "color": "green"
+        },
+        {
+          "label": "Dorian",
+          "color": "green"
+        },
+        {
+          "label": "Mixolyd.",
+          "color": "green"
+        },
+        {
+          "label": "Lydian",
+          "color": "green"
+        },
+        {
+          "label": "Phrygian",
+          "color": "green"
+        },
+        {
+          "label": "Locrian",
+          "color": "green"
+        },
+        {
+          "label": "Diminish.",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "Whole-half",
+          "color": "green"
+        },
+        {
+          "label": "Whole Tone",
+          "color": "green"
+        },
+        {
+          "label": "Minor Blues",
+          "color": "green"
+        },
+        {
+          "label": "Minor Penta.",
+          "color": "green"
+        },
+        {
+          "label": "Major Penta.",
+          "color": "green"
+        },
+        {
+          "label": "Harmonic Minor",
+          "color": "green"
+        },
+        {
+          "label": "Melodic Minor",
+          "color": "green"
+        },
+        {
+          "label": "Super Locrian",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "Bhairav",
+          "color": "green"
+        },
+        {
+          "label": "Hunga. Minor",
+          "color": "green"
+        },
+        {
+          "label": "Minor Gypsy",
+          "color": "green"
+        },
+        {
+          "label": "Hirojoshi",
+          "color": "green"
+        },
+        {
+          "label": "In-Sen",
+          "color": "green"
+        },
+        {
+          "label": "Iwato",
+          "color": "green"
+        },
+        {
+          "label": "Kumoi",
+          "color": "green"
+        },
+        {
+          "label": "Pelog",
+          "color": "green"
+        }
+      ],
+      [
+        {
+          "label": "Spanish",
+          "color": "green"
+        },
+        {
+          "label": "IonEol",
+          "color": "green"
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        },
+        {
+          "label": "",
+          "color": ""
+        }
+      ]
+    ],
+    "s": [
+      {
+        "label": "scale",
+        "color": "amber"
+      },
+      {
+        "label": "undo",
+        "color": "amber"
+      },
+      {
+        "label": "octave up",
+        "color": "green"
+      },
+      {
+        "label": "octave down",
+        "color": "green"
+      },
+      {
+        "label": "start stop",
+        "color": "red"
+      },
+      {
+        "label": "lock",
+        "color": "red"
+      },
+      {
+        "label": "solo",
+        "color": "amber"
+      },
+      {
+        "label": "overdub",
+        "color": "red"
+      }
+    ]
+  },
+  "source": "osd_maps/html_templates/Scale Edition Mode Table.html"
+}

@@ -1,0 +1,105 @@
+{
+  "templates": {
+    "device_controller_mode": {
+      "file": "osd_maps/json_templates/device_controller_mode.json",
+      "title": "Device Controller Mode"
+    },
+    "drum_step_sequencer_mode_combined_mode": {
+      "file": "osd_maps/json_templates/drum_step_sequencer_mode_combined_mode.json",
+      "title": "Drum Step Sequencer Mode - Combined Mode"
+    },
+    "drum_step_sequencer_mode_multinote_mode": {
+      "file": "osd_maps/json_templates/drum_step_sequencer_mode_multinote_mode.json",
+      "title": "Drum Step Sequencer Mode - Multinote Mode"
+    },
+    "instrument_controller_mode_table": {
+      "file": "osd_maps/json_templates/instrument_controller_mode_table.json",
+      "title": "Instrument controller mode table"
+    },
+    "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix": {
+      "file": "osd_maps/json_templates/launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix.json",
+      "title": "Launch and Record Quantization, and fixed clip length recording - bottom row of matrix"
+    },
+    "melodic_step_sequencer": {
+      "file": "osd_maps/json_templates/melodic_step_sequencer.json",
+      "title": "Melodic Step Sequencer"
+    },
+    "metronome_and_tempo_bottom_row_of_matrix": {
+      "file": "osd_maps/json_templates/metronome_and_tempo_bottom_row_of_matrix.json",
+      "title": "Metronome and tempo - bottom row of matrix"
+    },
+    "mixer_mode": {
+      "file": "osd_maps/json_templates/mixer_mode.json",
+      "title": "Mixer Mode"
+    },
+    "mute_solo_arm_bottom_row_of_matrix": {
+      "file": "osd_maps/json_templates/mute_solo_arm_bottom_row_of_matrix.json",
+      "title": "mute, solo, arm - bottom row of matrix"
+    },
+    "pro_session_mode": {
+      "file": "osd_maps/json_templates/pro_session_mode.json",
+      "title": "Pro Session Mode"
+    },
+    "quick_scale_modes_modus": {
+      "file": "osd_maps/json_templates/quick_scale_modes_modus.json",
+      "title": "Quick Scale Modes - Modus"
+    },
+    "quick_scale_modes_note_repeat": {
+      "file": "osd_maps/json_templates/quick_scale_modes_note_repeat.json",
+      "title": "Quick Scale Modes - Note Repeat"
+    },
+    "root_note_table": {
+      "file": "osd_maps/json_templates/root_note_table.json",
+      "title": "Root Note Table"
+    },
+    "scale_edition_mode_table": {
+      "file": "osd_maps/json_templates/scale_edition_mode_table.json",
+      "title": "Scale Edition Mode Table"
+    },
+    "session_mode": {
+      "file": "osd_maps/json_templates/session_mode.json",
+      "title": "Session Mode"
+    },
+    "user1_mode": {
+      "file": "osd_maps/json_templates/user1_mode.json",
+      "title": "User1 Mode"
+    },
+    "user2_mode": {
+      "file": "osd_maps/json_templates/user2_mode.json",
+      "title": "User2 Mode"
+    }
+  },
+  "routing": {
+    "by_mode_id": {
+      "session": "session_mode",
+      "pro_session": "pro_session_mode",
+      "pro_session_arm": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_solo": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_mute": "mute_solo_arm_bottom_row_of_matrix",
+      "pro_session_fixed_length": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_record_quant": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_launch_quant": "launch_and_record_quantization_and_fixed_clip_length_recording_bottom_row_of_matrix",
+      "pro_session_metronome": "metronome_and_tempo_bottom_row_of_matrix",
+      "pro_session_tempo": "metronome_and_tempo_bottom_row_of_matrix",
+      "instrument": "instrument_controller_mode_table",
+      "instrument_quick_scale": "instrument_controller_mode_table",
+      "instrument_controller": "instrument_controller_mode_table",
+      "instrument_scale": "scale_edition_mode_table",
+      "device_controller": "device_controller_mode",
+      "mixer": "mixer_mode",
+      "user1": "user1_mode",
+      "user2": "user2_mode",
+      "drum_stepseq_combined": "drum_step_sequencer_mode_combined_mode",
+      "drum_stepseq_multinote": "drum_step_sequencer_mode_multinote_mode",
+      "drum_stepseq_scale": "scale_edition_mode_table",
+      "melodic_stepseq": "melodic_step_sequencer",
+      "melodic_stepseq_scale": "scale_edition_mode_table",
+      "quick_scale_root": "root_note_table",
+      "quick_scale_mode": "quick_scale_modes_modus",
+      "quick_scale_repeat": "quick_scale_modes_note_repeat"
+    }
+  },
+  "overlays": {
+    "by_mode_id": {}
+  }
+}
