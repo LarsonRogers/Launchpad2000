@@ -339,6 +339,57 @@ class Launchpad(ControlSurface):
 				self._update_pad_colors_from_midi(midi_bytes)
 		return sent_successfully
 
+	def _button_index_from_cc(self, cc):
+		try:
+			value = int(cc) & 127
+		except Exception:
+			return -1
+		if self._mk3_rgb or self._lpx:
+			if value >= 91 and value <= 98:
+				return value - 91
+			try:
+				return 8 + self._side_notes.index(value)
+			except Exception:
+				return -1
+		else:
+			if value >= 104 and value <= 111:
+				return value - 104
+		return -1
+
+	def _button_index_from_note(self, note):
+		try:
+			value = int(note) & 127
+		except Exception:
+			return -1
+		if self._mk3_rgb or self._lpx:
+			return -1
+		try:
+			return 8 + self._side_notes.index(value)
+		except Exception:
+			return -1
+
+	def _update_button_colors(self, index, velocity):
+		if self._osd is None or not hasattr(self._osd, "button_colors"):
+			return
+		if index < 0 or index >= len(self._osd.button_colors):
+			return
+		if self._osd.button_colors[index] != velocity:
+			self._osd.button_colors[index] = velocity
+			self._schedule_pad_colors_update()
+
+	def clear_pad_colors(self):
+		if self._osd is None:
+			return
+		if hasattr(self._osd, "pad_colors"):
+			for i in range(len(self._osd.pad_colors)):
+				self._osd.pad_colors[i] = 0
+		if hasattr(self._osd, "button_colors"):
+			for i in range(len(self._osd.button_colors)):
+				self._osd.button_colors[i] = 0
+		if hasattr(self, "_dynamic_note_to_pad_index"):
+			self._dynamic_note_to_pad_index = {}
+		self._schedule_pad_colors_update()
+
 	def _use_dynamic_note_map(self):
 		try:
 			if self._selector is None:
@@ -420,6 +471,13 @@ class Launchpad(ControlSurface):
 		if midi_bytes is None or len(midi_bytes) < 3:
 			return
 		status = int(midi_bytes[0]) & 240
+		if status == 176:
+			cc = int(midi_bytes[1]) & 127
+			value = int(midi_bytes[2]) & 127
+			btn_index = self._button_index_from_cc(cc)
+			if btn_index >= 0:
+				self._update_button_colors(btn_index, value)
+			return
 		# Grid LEDs use note-on velocity; note-off (or note-on velocity 0) means off.
 		if status == 128:
 			note = int(midi_bytes[1]) & 127
@@ -428,6 +486,10 @@ class Launchpad(ControlSurface):
 			note = int(midi_bytes[1]) & 127
 			velocity = int(midi_bytes[2]) & 127
 		else:
+			return
+		btn_index = self._button_index_from_note(note)
+		if btn_index >= 0:
+			self._update_button_colors(btn_index, velocity)
 			return
 		pad_index = self._pad_index_from_note(note)
 		if pad_index < 0 or pad_index >= 64:

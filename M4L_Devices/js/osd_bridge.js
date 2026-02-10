@@ -53,6 +53,9 @@ var hardware_model = "";
 var pad_colors_dict_name = "osd_pad_colors";
 var pad_colors_dict = null;
 var last_pad_velocities = [];
+var last_button_velocities = [];
+var last_pad_colors = null;
+var last_button_colors = null;
 var snapshot_dict_name = "osd_snapshot";
 var snapshot_dict = null;
 var manifest_data = null;
@@ -388,8 +391,16 @@ function snapshot_labels_only(template) {
     if (!template || !template.snapshot) { return template; }
     var snap = template.snapshot;
     var out_snap = {};
-    if (snap.t && snap.t.length !== undefined) { out_snap.t = snap.t; }
-    if (snap.s && snap.s.length !== undefined) { out_snap.s = snap.s; }
+    if (snap.t && snap.t.length !== undefined) {
+        var tops = [];
+        for (var ti = 0; ti < snap.t.length; ti++) { tops.push(strip_color(snap.t[ti])); }
+        out_snap.t = tops;
+    }
+    if (snap.s && snap.s.length !== undefined) {
+        var sides = [];
+        for (var si = 0; si < snap.s.length; si++) { sides.push(strip_color(snap.s[si])); }
+        out_snap.s = sides;
+    }
     if (snap.g && snap.g.length !== undefined) {
         var rows = [];
         for (var r = 0; r < snap.g.length; r++) {
@@ -422,6 +433,8 @@ function send_snapshot_to_jweb(mode_id) {
         snapshot_dict.set("updated_at", new Date().getTime());
         last_snapshot_mode_id = mode_id;
         try { outlet(0, "loadSnapshot", snapshot_dict_name); } catch (e1) { }
+        if (last_pad_colors) { push_pad_colors_to_jweb(last_pad_colors); }
+        if (last_button_colors) { push_button_colors_to_jweb(last_button_colors); }
     } catch (e) {
         // ignore parse errors
     }
@@ -522,6 +535,12 @@ function pad_id_from_index(i) {
     return "g" + row + col;
 }
 
+function button_id_from_index(i) {
+    if (i >= 0 && i < 8) { return "t" + i; }
+    if (i >= 8 && i < 16) { return "s" + (i - 8); }
+    return null;
+}
+
 function ensure_pad_dict() {
     if (!pad_colors_dict) {
         pad_colors_dict = new Dict(pad_colors_dict_name);
@@ -538,6 +557,30 @@ function push_pad_colors_to_jweb(pad_values) {
             last_pad_velocities[i] = vel;
             changed = 1;
             var id = pad_id_from_index(i);
+            var rgb = velocity_to_rgb(vel);
+            pad_colors_dict.set("pad_rgb::" + id + "::r", rgb[0]);
+            pad_colors_dict.set("pad_rgb::" + id + "::g", rgb[1]);
+            pad_colors_dict.set("pad_rgb::" + id + "::b", rgb[2]);
+            try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
+        }
+    }
+    if (changed) {
+        pad_colors_dict.set("updated_at", new Date().getTime());
+        try { outlet(1, "padColorsDict", pad_colors_dict_name); } catch (e2) { }
+    }
+}
+
+function push_button_colors_to_jweb(button_values) {
+    if (!button_values || button_values.length < 16) { return; }
+    ensure_pad_dict();
+    var changed = 0;
+    for (var i = 0; i < 16; i++) {
+        var vel = Number(button_values[i]) || 0;
+        if (last_button_velocities[i] !== vel) {
+            last_button_velocities[i] = vel;
+            changed = 1;
+            var id = button_id_from_index(i);
+            if (!id) { continue; }
             var rgb = velocity_to_rgb(vel);
             pad_colors_dict.set("pad_rgb::" + id + "::r", rgb[0]);
             pad_colors_dict.set("pad_rgb::" + id + "::g", rgb[1]);
@@ -703,6 +746,9 @@ function update(args){
         var mode_id_val = safe_item(api_get_list(l95_osd, "mode_id"), 0, "");
         var hw_val = safe_item(api_get_list(l95_osd, "hardware_model"), 0, "");
         var pad_colors = api_get_list(l95_osd, "pad_colors");
+        var button_colors = api_get_list(l95_osd, "button_colors");
+        if (pad_colors && pad_colors.length) { last_pad_colors = pad_colors.slice(0); }
+        if (button_colors && button_colors.length) { last_button_colors = button_colors.slice(0); }
 
         safe_message(mode, "set", mode_val);
         safe_message(info_0, "set", safe_item(info, 0, " "));
@@ -721,6 +767,7 @@ function update(args){
             schedule_mode_assets();
         }
         push_pad_colors_to_jweb(pad_colors);
+        push_button_colors_to_jweb(button_colors);
 
         sync_guide_rect();
     } catch (e) {

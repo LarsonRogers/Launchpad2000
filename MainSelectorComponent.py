@@ -103,6 +103,7 @@ class MainSelectorComponent(ModeSelectorComponent):
 		#User1 Instrument controller (Scale)
 		self._instrument_controller = InstrumentControllerComponent(self._matrix, self._side_buttons, self._nav_buttons, self._control_surface, self._note_repeat)
 		self._instrument_controller.set_osd(self._osd)
+		self._instrument_was_active = False
 		#self._instrument_controller = None
 		
 		#User1 Device controller (Fx or Instrument parameters)
@@ -475,7 +476,14 @@ class MainSelectorComponent(ModeSelectorComponent):
 				self._activate_matrix(False) #Disable matrix buttons (clip slots)
 				self._activate_scene_buttons(True)#Enable side buttons
 				self._activate_navigation_buttons(True)#Enable nav buttons
+				self._instrument_was_active = True
 			else:
+				if self._instrument_was_active and self._control_surface is not None:
+					try:
+						self._control_surface.clear_pad_colors()
+					except Exception:
+						pass
+				self._instrument_was_active = False
 				for scene_index in range(8):#Restore all matrix buttons and scene launch buttons
 					scene_button = self._side_buttons[scene_index]
 					scene_button.use_default_message() # Reset to original channel

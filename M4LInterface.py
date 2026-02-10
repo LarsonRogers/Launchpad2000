@@ -12,6 +12,7 @@ class M4LInterface(ControlSurfaceComponent):
 		self.hardware_model = ''
 		self.screenshots_dir = ''
 		self.pad_colors = [0 for _ in range(64)]
+		self.button_colors = [0 for _ in range(16)]
 		self.clear()
 
 	def disconnect(self):

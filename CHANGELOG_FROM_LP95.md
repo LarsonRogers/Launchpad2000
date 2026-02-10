@@ -190,3 +190,29 @@
   - Added `_use_dynamic_note_map()` to enable dynamic note-to-pad mapping only when the instrument controller is active.
   - `_pad_index_from_note()` now selects between `_dynamic_note_to_pad_index` and `_static_note_to_pad_index` before falling back to legacy mapping.
   - `_update_note_to_pad_index()` now updates the dynamic map alongside the legacy cache.
+
+## 2026-02-10 - Track top/side LED colors and clear instrument bleed
+
+- File changed: `M4LInterface.py`
+- Change type: Additive UI state
+- Details:
+  - Added `button_colors` array (16 slots: top row + side column) for OSD color updates.
+
+- File changed: `Launchpad.py`
+- Change type: Additive LED capture and reset
+- Details:
+  - Captured top/side LED colors from outgoing MIDI (CC + side-note LEDs) into `button_colors`.
+  - Added `clear_pad_colors()` to reset OSD colors and dynamic map when leaving instrument mode.
+
+- File changed: `MainSelectorComponent.py`
+- Change type: Additive mode cleanup
+- Details:
+  - Track instrument controller active state and clear OSD pad/button colors when instrument mode is disabled.
+
+- File changed: `M4L_Devices/js/osd_bridge.js`
+- Change type: Additive UI syncing
+- Details:
+  - Read `button_colors` from LiveAPI and apply to top/side buttons in the grid UI.
+  - Clear template colors (t/s/g) on snapshot load to avoid stale color bleed between modes.
+  - Reapply current pad/button colors immediately after snapshot load to prevent the grid from reverting to grey.
+  - Do not force template colors to black (remove `color` from snapshot cells) so live pad colors are not wiped after label loads.
