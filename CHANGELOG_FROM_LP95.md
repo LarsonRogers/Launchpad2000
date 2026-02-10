@@ -277,3 +277,4 @@
 - Details:
   - Added a delayed `_refresh_osd_state()` after init to force a resend of LED states, helping the JWeb grid populate when it loads after the control surface.
   - In instrument mode, only apply note overlays when the incoming LED velocity exceeds the base layout value; if the value drops to the base, clear the overlay. This avoids layout bleed from conflicting note messages.
+  - Treat instrument base-layout LEDs as channel `base_channel + 4` and route those to the base layer while leaving feedback channels for the active-note overlay.

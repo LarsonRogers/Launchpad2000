@@ -649,6 +649,17 @@ class Launchpad(ControlSurface):
 				pad_index = self._find_pad_index_in_matrix(note, None)
 			if pad_index < 0 or pad_index >= 64:
 				return
+			non_feedback_channel = 15
+			try:
+				if self._selector is not None and hasattr(self._selector, "_instrument_controller"):
+					ic = self._selector._instrument_controller
+					if ic is not None and hasattr(ic, "base_channel"):
+						non_feedback_channel = (int(ic.base_channel) + 4) & 15
+			except Exception:
+				non_feedback_channel = 15
+			if int(channel) == int(non_feedback_channel):
+				self._update_pad_color_from_index(pad_index, velocity)
+				return
 			if not hasattr(self, "_pad_base_colors"):
 				self._pad_base_colors = [0 for _ in range(64)]
 			if not hasattr(self, "_pad_override_active"):
