@@ -259,3 +259,11 @@
 - Change type: Additive dictionary mirroring
 - Details:
   - Added a `pad_rgb` dictionary mirror (`g00::r/g/b`, `t0::r/g/b`, `s0::r/g/b`) to satisfy `dictwrap pad_rgb` consumers and eliminate missing-dict console errors.
+
+## 2026-02-10 - Precreate pad dictionaries for Max dictwrap
+
+- File changed: `M4L_Devices/js/osd_bridge.js`
+- Change type: Additive dictionary creation
+- Details:
+  - Pre-create per-pad dictionaries (`g00..g77`, `t0..t7`, `s0..s7`) on load to avoid `dictwrap` errors when patchers access them before LED updates.
+  - Populate per-pad dicts with `r/g/b` values alongside the existing `osd_pad_colors` and `pad_rgb` dicts.

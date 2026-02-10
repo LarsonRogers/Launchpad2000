@@ -54,6 +54,8 @@ var pad_colors_dict_name = "osd_pad_colors";
 var pad_colors_dict = null;
 var pad_rgb_dict_name = "pad_rgb";
 var pad_rgb_dict = null;
+var pad_cell_dicts = null;
+var pad_cell_dicts_ready = 0;
 var last_pad_velocities = [];
 var last_button_velocities = [];
 var last_pad_colors = null;
@@ -550,6 +552,42 @@ function ensure_pad_dict() {
     if (!pad_rgb_dict) {
         pad_rgb_dict = new Dict(pad_rgb_dict_name);
     }
+    ensure_pad_cell_dicts();
+}
+
+function ensure_pad_cell_dicts() {
+    if (pad_cell_dicts_ready) { return; }
+    pad_cell_dicts = {};
+    var i = 0;
+    for (i = 0; i < 64; i++) {
+        var id = pad_id_from_index(i);
+        try {
+            pad_cell_dicts[id] = new Dict(id);
+            pad_cell_dicts[id].set("r", 0);
+            pad_cell_dicts[id].set("g", 0);
+            pad_cell_dicts[id].set("b", 0);
+        } catch (e1) { }
+    }
+    for (i = 0; i < 16; i++) {
+        var bid = button_id_from_index(i);
+        if (!bid) { continue; }
+        try {
+            pad_cell_dicts[bid] = new Dict(bid);
+            pad_cell_dicts[bid].set("r", 0);
+            pad_cell_dicts[bid].set("g", 0);
+            pad_cell_dicts[bid].set("b", 0);
+        } catch (e2) { }
+    }
+    pad_cell_dicts_ready = 1;
+}
+
+function set_cell_dict_rgb(id, rgb) {
+    if (!pad_cell_dicts || !pad_cell_dicts[id]) { return; }
+    try {
+        pad_cell_dicts[id].set("r", rgb[0]);
+        pad_cell_dicts[id].set("g", rgb[1]);
+        pad_cell_dicts[id].set("b", rgb[2]);
+    } catch (e) { }
 }
 
 function push_pad_colors_to_jweb(pad_values) {
@@ -571,6 +609,7 @@ function push_pad_colors_to_jweb(pad_values) {
                 pad_rgb_dict.set(id + "::g", rgb[1]);
                 pad_rgb_dict.set(id + "::b", rgb[2]);
             }
+            set_cell_dict_rgb(id, rgb);
             try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
         }
     }
@@ -601,6 +640,7 @@ function push_button_colors_to_jweb(button_values) {
                 pad_rgb_dict.set(id + "::g", rgb[1]);
                 pad_rgb_dict.set(id + "::b", rgb[2]);
             }
+            set_cell_dict_rgb(id, rgb);
             try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
         }
     }
@@ -1088,6 +1128,7 @@ function start_boot(){
 function loadbang(){
     log("loadbang");
     load_mk2_palette();
+    ensure_pad_dict();
     bang();
     start_boot();
 }
