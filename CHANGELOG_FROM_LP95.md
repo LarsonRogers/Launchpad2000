@@ -269,3 +269,11 @@
   - Populate per-pad dicts with `r/g/b` values alongside the existing `osd_pad_colors` and `pad_rgb` dicts.
   - Force dictionary creation at script load (not just `loadbang`) so patcher dictwrap objects can bind immediately.
   - Add a short JWeb boot retry task that re-sends snapshot/pad colors until the UI is ready, so the grid doesn't start grey.
+
+## 2026-02-10 - Refresh OSD state after init, gate instrument overlays
+
+- File changed: `Launchpad.py`
+- Change type: Additive OSD refresh
+- Details:
+  - Added a delayed `_refresh_osd_state()` after init to force a resend of LED states, helping the JWeb grid populate when it loads after the control surface.
+  - In instrument mode, only apply note overlays when the incoming LED velocity exceeds the base layout value; if the value drops to the base, clear the overlay. This avoids layout bleed from conflicting note messages.

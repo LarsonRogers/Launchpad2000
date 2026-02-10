@@ -204,6 +204,8 @@ class Launchpad(ControlSurface):
 			self.request_rebuild_midi_map()
 			# and request update 
 			self._selector.update()
+			self.schedule_message(2, self._refresh_osd_state)
+			self.schedule_message(6, self._refresh_osd_state)
 			if self._lpx:
 				self.log_message("LaunchPad95 (LPX) Loaded !")
 			elif self._mk3_rgb:
@@ -628,7 +630,23 @@ class Launchpad(ControlSurface):
 		except Exception:
 			in_dynamic = False
 		if in_dynamic:
-			pad_index = self._find_pad_index_in_matrix(note, channel)
+			pad_index = -1
+			if hasattr(self, "_dynamic_note_to_pad_index"):
+				try:
+					key = self._note_map_key(note, channel)
+					if key is not None:
+						pad_index = self._dynamic_note_to_pad_index.get(key, -1)
+				except Exception:
+					pad_index = -1
+			if pad_index < 0 and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+				try:
+					pad_index = self._dynamic_note_to_pad_index_by_note.get(note, -1)
+				except Exception:
+					pad_index = -1
+			if pad_index < 0:
+				pad_index = self._find_pad_index_in_matrix(note, channel)
+			if pad_index < 0:
+				pad_index = self._find_pad_index_in_matrix(note, None)
 			if pad_index < 0 or pad_index >= 64:
 				return
 			if not hasattr(self, "_pad_base_colors"):
@@ -650,6 +668,15 @@ class Launchpad(ControlSurface):
 				if self._osd.pad_colors[pad_index] != base_val:
 					self._osd.pad_colors[pad_index] = base_val
 					self._schedule_pad_colors_update()
+				return
+			if self._pad_override_active[pad_index] and val <= base_val:
+				self._pad_override_active[pad_index] = 0
+				self._pad_override_colors[pad_index] = 0
+				if self._osd.pad_colors[pad_index] != base_val:
+					self._osd.pad_colors[pad_index] = base_val
+					self._schedule_pad_colors_update()
+				return
+			if val <= base_val:
 				return
 			if base_val == val and not self._pad_override_active[pad_index]:
 				return
@@ -723,6 +750,22 @@ class Launchpad(ControlSurface):
 		for index in range(4):
 			challenge_byte = self._challenge >> 8 * index & 127
 			self._send_midi((176, 17 + index, challenge_byte))
+
+	def _refresh_osd_state(self):
+		try:
+			for control in self.controls:
+				if isinstance(control, ConfigurableButtonElement):
+					try:
+						control.force_next_send()
+					except Exception:
+						pass
+		except Exception:
+			pass
+		try:
+			if self._selector is not None:
+				self._selector.update()
+		except Exception:
+			pass
 
 	def _user_byte_value(self, value):
 		assert (value in range(128))
