@@ -1150,6 +1150,7 @@ function start_jweb_boot(){
     jweb_boot_interval = 200;
     jweb_boot_task = new Task(function(){
         jweb_boot_attempts++;
+        try { update(); } catch (e0) { }
         var use_mode = pending_mode_id || last_mode_id || "session";
         send_snapshot_to_jweb(use_mode);
         if (last_pad_colors) { push_pad_colors_to_jweb(last_pad_colors); }

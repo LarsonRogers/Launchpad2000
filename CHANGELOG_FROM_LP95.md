@@ -269,6 +269,7 @@
   - Populate per-pad dicts with `r/g/b` values alongside the existing `osd_pad_colors` and `pad_rgb` dicts.
   - Force dictionary creation at script load (not just `loadbang`) so patcher dictwrap objects can bind immediately.
   - Add a short JWeb boot retry task that re-sends snapshot/pad colors until the UI is ready, so the grid doesn't start grey.
+  - During JWeb boot retries, call `update()` to pull fresh pad/button colors from LiveAPI before re-sending.
 
 ## 2026-02-10 - Refresh OSD state after init, gate instrument overlays
 
@@ -278,3 +279,4 @@
   - Added a delayed `_refresh_osd_state()` after init to force a resend of LED states, helping the JWeb grid populate when it loads after the control surface.
   - In instrument mode, only apply note overlays when the incoming LED velocity exceeds the base layout value; if the value drops to the base, clear the overlay. This avoids layout bleed from conflicting note messages.
   - Treat instrument base-layout LEDs as channel `base_channel + 4` and route those to the base layer while leaving feedback channels for the active-note overlay.
+  - Cache outgoing LED values even before `M4LInterface` exists, so the grid can populate immediately after the device UI loads.

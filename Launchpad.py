@@ -83,6 +83,8 @@ class Launchpad(ControlSurface):
 			self._static_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index_by_note = {}
+			self._pad_colors_cache = [0 for _ in range(64)]
+			self._button_colors_cache = [0 for _ in range(16)]
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
 			self._init_done = False
 			self._pad_colors_update_pending = False
@@ -185,6 +187,13 @@ class Launchpad(ControlSurface):
 				self._osd.hardware_model = "mk2"
 			else:
 				self._osd.hardware_model = "mk1"
+			try:
+				for i in range(64):
+					self._osd.pad_colors[i] = self._pad_colors_cache[i]
+				for i in range(16):
+					self._osd.button_colors[i] = self._button_colors_cache[i]
+			except Exception:
+				pass
 			self._init_note_repeat()
 			try:
 				self._selector = MainSelectorComponent(matrix, tuple(top_buttons), tuple(side_buttons), self._config_button, self._osd, self, self._note_repeat, self._c_instance)
@@ -317,6 +326,8 @@ class Launchpad(ControlSurface):
 				self._mk2_rgb = True
 				self._suppress_send_midi = False
 				self.set_enabled(True)
+				self.schedule_message(2, self._refresh_osd_state)
+				self.schedule_message(6, self._refresh_osd_state)
 				self.init()
 		#MK1 Challenge
 		elif len(midi_bytes) == 8 and midi_bytes[1:5] == (0, 32, 41, 6):
@@ -328,6 +339,8 @@ class Launchpad(ControlSurface):
 				self.init()
 				self._suppress_send_midi = False
 				self.set_enabled(True)
+				self.schedule_message(2, self._refresh_osd_state)
+				self.schedule_message(6, self._refresh_osd_state)
 		else:
 			ControlSurface.handle_sysex(self,midi_bytes)
 		
@@ -391,6 +404,10 @@ class Launchpad(ControlSurface):
 			return
 		if self._osd.button_colors[index] != velocity:
 			self._osd.button_colors[index] = velocity
+			try:
+				self._button_colors_cache[index] = velocity
+			except Exception:
+				pass
 			self._schedule_pad_colors_update()
 
 	def _update_button_color_from_index(self, button_index, velocity):
@@ -409,6 +426,10 @@ class Launchpad(ControlSurface):
 		if hasattr(self._osd, "pad_colors"):
 			for i in range(len(self._osd.pad_colors)):
 				self._osd.pad_colors[i] = 0
+		if hasattr(self, "_pad_colors_cache"):
+			self._pad_colors_cache = [0 for _ in range(64)]
+		if hasattr(self, "_button_colors_cache"):
+			self._button_colors_cache = [0 for _ in range(16)]
 		if hasattr(self, "_pad_base_colors"):
 			self._pad_base_colors = [0 for _ in range(64)]
 		if hasattr(self, "_pad_override_active"):
@@ -596,8 +617,51 @@ class Launchpad(ControlSurface):
 			self._note_to_pad_index = {}
 		self._note_to_pad_index[n] = pad_index
 
+	def _cache_pad_colors_from_midi(self, midi_bytes):
+		if midi_bytes is None or len(midi_bytes) < 3:
+			return
+		status_byte = int(midi_bytes[0])
+		status = status_byte & 240
+		channel = status_byte & 15
+		if status == 176:
+			cc = int(midi_bytes[1]) & 127
+			value = int(midi_bytes[2]) & 127
+			btn_index = self._button_index_from_cc(cc)
+			if btn_index >= 0:
+				try:
+					self._button_colors_cache[btn_index] = value
+				except Exception:
+					pass
+			return
+		if status == 128:
+			note = int(midi_bytes[1]) & 127
+			velocity = 0
+		elif status == 144:
+			note = int(midi_bytes[1]) & 127
+			velocity = int(midi_bytes[2]) & 127
+		else:
+			return
+		btn_index = self._button_index_from_note(note)
+		if btn_index >= 0:
+			try:
+				self._button_colors_cache[btn_index] = velocity
+			except Exception:
+				pass
+			return
+		pad_index = self._pad_index_from_note(note, channel)
+		if pad_index < 0 or pad_index >= 64:
+			return
+		try:
+			self._pad_colors_cache[pad_index] = velocity
+		except Exception:
+			pass
+
 	def _update_pad_colors_from_midi(self, midi_bytes):
 		if self._osd is None or not hasattr(self._osd, "pad_colors"):
+			try:
+				self._cache_pad_colors_from_midi(midi_bytes)
+			except Exception:
+				pass
 			return
 		if midi_bytes is None or len(midi_bytes) < 3:
 			return
@@ -678,6 +742,10 @@ class Launchpad(ControlSurface):
 					self._pad_override_colors[pad_index] = 0
 				if self._osd.pad_colors[pad_index] != base_val:
 					self._osd.pad_colors[pad_index] = base_val
+					try:
+						self._pad_colors_cache[pad_index] = base_val
+					except Exception:
+						pass
 					self._schedule_pad_colors_update()
 				return
 			if self._pad_override_active[pad_index] and val <= base_val:
@@ -685,6 +753,10 @@ class Launchpad(ControlSurface):
 				self._pad_override_colors[pad_index] = 0
 				if self._osd.pad_colors[pad_index] != base_val:
 					self._osd.pad_colors[pad_index] = base_val
+					try:
+						self._pad_colors_cache[pad_index] = base_val
+					except Exception:
+						pass
 					self._schedule_pad_colors_update()
 				return
 			if val <= base_val:
@@ -695,6 +767,10 @@ class Launchpad(ControlSurface):
 			self._pad_override_colors[pad_index] = val
 			if self._osd.pad_colors[pad_index] != val:
 				self._osd.pad_colors[pad_index] = val
+				try:
+					self._pad_colors_cache[pad_index] = val
+				except Exception:
+					pass
 				self._schedule_pad_colors_update()
 			return
 		pad_index = self._pad_index_from_note(note, channel)
@@ -704,6 +780,10 @@ class Launchpad(ControlSurface):
 			return
 		if self._osd.pad_colors[pad_index] != velocity:
 			self._osd.pad_colors[pad_index] = velocity
+			try:
+				self._pad_colors_cache[pad_index] = velocity
+			except Exception:
+				pass
 			self._schedule_pad_colors_update()
 
 	def _update_pad_color_from_index(self, pad_index, velocity):
@@ -727,6 +807,10 @@ class Launchpad(ControlSurface):
 			return
 		if self._osd.pad_colors[idx] != val:
 			self._osd.pad_colors[idx] = val
+			try:
+				self._pad_colors_cache[idx] = val
+			except Exception:
+				pass
 			self._schedule_pad_colors_update()
 
 	def _schedule_pad_colors_update(self):
