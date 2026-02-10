@@ -30,6 +30,11 @@ var ui_ready = 0;
 var show_info_section = 1;
 var show_guide_section = 1;
 var show_modeinfo_section = 1;
+var jweb_ready = 0;
+var jweb_boot_task = null;
+var jweb_boot_attempts = 0;
+var jweb_boot_max = 12;
+var jweb_boot_interval = 200;
 
 var section_gap = 8;
 var menu_height = 24;
@@ -835,6 +840,17 @@ function update(args){
     }
 }
 
+function ready() {
+    jweb_ready = 1;
+    // Force a fresh snapshot once the JWeb UI is ready.
+    last_snapshot_mode_id = "";
+    try { update(); } catch (e) { }
+    var use_mode = pending_mode_id || last_mode_id || "session";
+    send_snapshot_to_jweb(use_mode);
+    if (last_pad_colors) { push_pad_colors_to_jweb(last_pad_colors); }
+    if (last_button_colors) { push_button_colors_to_jweb(last_button_colors); }
+}
+
 function init_ui(){
     compute_screenshots_dir();
     show_info_section = 1;
@@ -1128,12 +1144,35 @@ function start_boot(){
     boot_task.repeat(boot_max);
 }
 
+function start_jweb_boot(){
+    if (jweb_boot_task) { jweb_boot_task.cancel(); }
+    jweb_boot_attempts = 0;
+    jweb_boot_interval = 200;
+    jweb_boot_task = new Task(function(){
+        jweb_boot_attempts++;
+        var use_mode = pending_mode_id || last_mode_id || "session";
+        send_snapshot_to_jweb(use_mode);
+        if (last_pad_colors) { push_pad_colors_to_jweb(last_pad_colors); }
+        if (last_button_colors) { push_button_colors_to_jweb(last_button_colors); }
+        if (jweb_ready || jweb_boot_attempts >= jweb_boot_max) {
+            jweb_boot_task.cancel();
+            jweb_boot_task = null;
+            return;
+        }
+        jweb_boot_interval = Math.min(600, Math.round(jweb_boot_interval * 1.4));
+        jweb_boot_task.interval = jweb_boot_interval;
+    }, this);
+    jweb_boot_task.interval = jweb_boot_interval;
+    jweb_boot_task.repeat(jweb_boot_max);
+}
+
 function loadbang(){
     log("loadbang");
     load_mk2_palette();
     ensure_pad_dict();
     bang();
     start_boot();
+    start_jweb_boot();
 }
 
 function compute_max_screen_w(){
