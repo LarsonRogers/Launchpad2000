@@ -86,6 +86,9 @@ class Launchpad(ControlSurface):
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
 			self._init_done = False
 			self._pad_colors_update_pending = False
+			self._pad_base_colors = [0 for _ in range(64)]
+			self._pad_override_active = [0 for _ in range(64)]
+			self._pad_override_colors = [0 for _ in range(64)]
 		# caller will send challenge and we will continue as challenge is received.
 		
 			
@@ -163,6 +166,15 @@ class Launchpad(ControlSurface):
 			side_buttons[5].name = 'Trk_On_Button'
 			side_buttons[6].name = 'Solo_Button'
 			side_buttons[7].name = 'Arm_Button'
+			for index in range(8):
+				try:
+					top_buttons[index]._lp_button_index = index
+				except Exception:
+					pass
+				try:
+					side_buttons[index]._lp_button_index = 8 + index
+				except Exception:
+					pass
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
 			if self._lpx:
@@ -379,12 +391,28 @@ class Launchpad(ControlSurface):
 			self._osd.button_colors[index] = velocity
 			self._schedule_pad_colors_update()
 
+	def _update_button_color_from_index(self, button_index, velocity):
+		try:
+			idx = int(button_index)
+		except Exception:
+			return
+		if idx < 0 or idx >= 16:
+			return
+		val = int(velocity) & 127
+		self._update_button_colors(idx, val)
+
 	def clear_pad_colors(self):
 		if self._osd is None:
 			return
 		if hasattr(self._osd, "pad_colors"):
 			for i in range(len(self._osd.pad_colors)):
 				self._osd.pad_colors[i] = 0
+		if hasattr(self, "_pad_base_colors"):
+			self._pad_base_colors = [0 for _ in range(64)]
+		if hasattr(self, "_pad_override_active"):
+			self._pad_override_active = [0 for _ in range(64)]
+		if hasattr(self, "_pad_override_colors"):
+			self._pad_override_colors = [0 for _ in range(64)]
 		if hasattr(self, "_dynamic_note_to_pad_index"):
 			self._dynamic_note_to_pad_index = {}
 		if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
@@ -599,6 +627,38 @@ class Launchpad(ControlSurface):
 			in_dynamic = self._use_dynamic_note_map()
 		except Exception:
 			in_dynamic = False
+		if in_dynamic:
+			pad_index = self._find_pad_index_in_matrix(note, channel)
+			if pad_index < 0 or pad_index >= 64:
+				return
+			if not hasattr(self, "_pad_base_colors"):
+				self._pad_base_colors = [0 for _ in range(64)]
+			if not hasattr(self, "_pad_override_active"):
+				self._pad_override_active = [0 for _ in range(64)]
+			if not hasattr(self, "_pad_override_colors"):
+				self._pad_override_colors = [0 for _ in range(64)]
+			val = int(velocity) & 127
+			base_val = 0
+			try:
+				base_val = self._pad_base_colors[pad_index]
+			except Exception:
+				base_val = 0
+			if val == 0:
+				if self._pad_override_active[pad_index]:
+					self._pad_override_active[pad_index] = 0
+					self._pad_override_colors[pad_index] = 0
+				if self._osd.pad_colors[pad_index] != base_val:
+					self._osd.pad_colors[pad_index] = base_val
+					self._schedule_pad_colors_update()
+				return
+			if base_val == val and not self._pad_override_active[pad_index]:
+				return
+			self._pad_override_active[pad_index] = 1
+			self._pad_override_colors[pad_index] = val
+			if self._osd.pad_colors[pad_index] != val:
+				self._osd.pad_colors[pad_index] = val
+				self._schedule_pad_colors_update()
+			return
 		pad_index = self._pad_index_from_note(note, channel)
 		if pad_index < 0 or pad_index >= 64:
 			return
@@ -618,6 +678,15 @@ class Launchpad(ControlSurface):
 		if idx < 0 or idx >= 64:
 			return
 		val = int(velocity) & 127
+		if not hasattr(self, "_pad_base_colors"):
+			self._pad_base_colors = [0 for _ in range(64)]
+		if not hasattr(self, "_pad_override_active"):
+			self._pad_override_active = [0 for _ in range(64)]
+		if not hasattr(self, "_pad_override_colors"):
+			self._pad_override_colors = [0 for _ in range(64)]
+		self._pad_base_colors[idx] = val
+		if self._pad_override_active[idx]:
+			return
 		if self._osd.pad_colors[idx] != val:
 			self._osd.pad_colors[idx] = val
 			self._schedule_pad_colors_update()

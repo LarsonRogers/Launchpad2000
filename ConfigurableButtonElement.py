@@ -83,6 +83,11 @@ class ConfigurableButtonElement(ButtonElement):
 					self._control_surface._update_pad_color_from_index(self._lp_pad_index, value)
 				except Exception:
 					pass
+			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
+				try:
+					self._control_surface._update_button_color_from_index(self._lp_button_index, value)
+				except Exception:
+					pass
 			super(ConfigurableButtonElement, self).send_value(value, **k)
 		else:
 			self._draw_skin(value)

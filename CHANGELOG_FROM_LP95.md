@@ -238,3 +238,24 @@
   - Reapply current pad/button colors immediately after snapshot load to prevent the grid from reverting to grey.
   - Do not force template colors to black (remove `color` from snapshot cells) so live pad colors are not wiped after label loads.
   - Keep top/side template colors (t/s) while stripping grid colors (g), so button labels can show intended colors even when hardware LEDs are not updating.
+
+## 2026-02-10 - Add instrument note overlay and pad_rgb mirror
+
+- File changed: `Launchpad.py`
+- Change type: Additive LED overlay tracking
+- Details:
+  - Added `_pad_base_colors`, `_pad_override_active`, `_pad_override_colors` buffers to preserve layout colors in instrument mode.
+  - `clear_pad_colors()` now resets the base/override buffers alongside the LiveAPI arrays.
+  - `_update_pad_color_from_index()` stores base values and avoids overwriting active note overlays.
+  - `_update_pad_colors_from_midi()` now applies temporary overrides for instrument-mode note feedback (note-on/off) and restores the base color after note-off.
+  - Added `_update_button_color_from_index()` helper and `_lp_button_index` assignments for top/side buttons so UI button LEDs update without relying on MIDI echo.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive OSD updates
+- Details:
+  - When a button has `_lp_button_index`, integer LED updates are forwarded to the control surface to update `button_colors`.
+
+- File changed: `M4L_Devices/js/osd_bridge.js`
+- Change type: Additive dictionary mirroring
+- Details:
+  - Added a `pad_rgb` dictionary mirror (`g00::r/g/b`, `t0::r/g/b`, `s0::r/g/b`) to satisfy `dictwrap pad_rgb` consumers and eliminate missing-dict console errors.

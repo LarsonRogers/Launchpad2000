@@ -52,6 +52,8 @@ var mk2_palette = null;
 var hardware_model = "";
 var pad_colors_dict_name = "osd_pad_colors";
 var pad_colors_dict = null;
+var pad_rgb_dict_name = "pad_rgb";
+var pad_rgb_dict = null;
 var last_pad_velocities = [];
 var last_button_velocities = [];
 var last_pad_colors = null;
@@ -545,6 +547,9 @@ function ensure_pad_dict() {
     if (!pad_colors_dict) {
         pad_colors_dict = new Dict(pad_colors_dict_name);
     }
+    if (!pad_rgb_dict) {
+        pad_rgb_dict = new Dict(pad_rgb_dict_name);
+    }
 }
 
 function push_pad_colors_to_jweb(pad_values) {
@@ -561,11 +566,17 @@ function push_pad_colors_to_jweb(pad_values) {
             pad_colors_dict.set("pad_rgb::" + id + "::r", rgb[0]);
             pad_colors_dict.set("pad_rgb::" + id + "::g", rgb[1]);
             pad_colors_dict.set("pad_rgb::" + id + "::b", rgb[2]);
+            if (pad_rgb_dict) {
+                pad_rgb_dict.set(id + "::r", rgb[0]);
+                pad_rgb_dict.set(id + "::g", rgb[1]);
+                pad_rgb_dict.set(id + "::b", rgb[2]);
+            }
             try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
         }
     }
     if (changed) {
         pad_colors_dict.set("updated_at", new Date().getTime());
+        if (pad_rgb_dict) { pad_rgb_dict.set("updated_at", new Date().getTime()); }
         try { outlet(1, "padColorsDict", pad_colors_dict_name); } catch (e2) { }
     }
 }
@@ -585,11 +596,17 @@ function push_button_colors_to_jweb(button_values) {
             pad_colors_dict.set("pad_rgb::" + id + "::r", rgb[0]);
             pad_colors_dict.set("pad_rgb::" + id + "::g", rgb[1]);
             pad_colors_dict.set("pad_rgb::" + id + "::b", rgb[2]);
+            if (pad_rgb_dict) {
+                pad_rgb_dict.set(id + "::r", rgb[0]);
+                pad_rgb_dict.set(id + "::g", rgb[1]);
+                pad_rgb_dict.set(id + "::b", rgb[2]);
+            }
             try { outlet(1, "setPadColor", id, rgb[0], rgb[1], rgb[2]); } catch (e1) { }
         }
     }
     if (changed) {
         pad_colors_dict.set("updated_at", new Date().getTime());
+        if (pad_rgb_dict) { pad_rgb_dict.set("updated_at", new Date().getTime()); }
         try { outlet(1, "padColorsDict", pad_colors_dict_name); } catch (e2) { }
     }
 }
