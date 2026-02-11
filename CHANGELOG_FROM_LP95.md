@@ -338,3 +338,18 @@
 - Details:
   - Removed feedback-channel-specific note-only fallback in `_update_pad_colors_from_midi()`.
   - This prevents reintroducing wrong-pad mappings in ambiguous duplicate-note instrument layouts while retaining strict channel-first resolution.
+
+## 2026-02-11 - Fix startup button wipe and dynamic overlay suppression
+
+- File changed: `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: Additive startup guard
+- Details:
+  - Added `button_nonzero_seen[]` tracking in `push_button_colors_to_jweb()`.
+  - Skip initial zero button-color writes until a button has emitted a nonzero LED value at least once, preventing startup template colors from being immediately wiped to grey.
+
+- File changed: `Launchpad.py`
+- Change type: Dynamic map/overlay correction
+- Details:
+  - Added `_dynamic_pad_index_to_note_key` bookkeeping to prune stale `(note, channel)` keys when a pad's dynamic mapping changes.
+  - Reset this bookkeeping in `clear_pad_colors()`.
+  - In dynamic feedback overlay handling, removed `val <= base_val` suppression so nonzero played/held-note feedback is always visible and still restored on note-off.

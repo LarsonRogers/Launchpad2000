@@ -83,6 +83,7 @@ class Launchpad(ControlSurface):
 			self._static_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index_by_note = {}
+			self._dynamic_pad_index_to_note_key = {}
 			self._dynamic_note_map_debug = False
 			self._pad_colors_cache = [0 for _ in range(64)]
 			self._button_colors_cache = [0 for _ in range(16)]
@@ -441,6 +442,8 @@ class Launchpad(ControlSurface):
 			self._dynamic_note_to_pad_index = {}
 		if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 			self._dynamic_note_to_pad_index_by_note = {}
+		if hasattr(self, "_dynamic_pad_index_to_note_key"):
+			self._dynamic_pad_index_to_note_key = {}
 		self._schedule_pad_colors_update()
 
 	def clear_pad_grid_colors(self):
@@ -690,7 +693,17 @@ class Launchpad(ControlSurface):
 			self._dynamic_note_to_pad_index = {}
 		key = self._note_map_key(n, channel)
 		if key is not None:
+			if not hasattr(self, "_dynamic_pad_index_to_note_key"):
+				self._dynamic_pad_index_to_note_key = {}
+			prev_key = self._dynamic_pad_index_to_note_key.get(pad_index, None)
+			if prev_key is not None and prev_key != key:
+				try:
+					if self._dynamic_note_to_pad_index.get(prev_key, None) == pad_index:
+						del self._dynamic_note_to_pad_index[prev_key]
+				except Exception:
+					pass
 			self._dynamic_note_to_pad_index[key] = pad_index
+			self._dynamic_pad_index_to_note_key[pad_index] = key
 		if not hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 			self._dynamic_note_to_pad_index_by_note = {}
 		if channel is None:
@@ -842,21 +855,6 @@ class Launchpad(ControlSurface):
 					except Exception:
 						pass
 					self._schedule_pad_colors_update()
-				return
-			if self._pad_override_active[pad_index] and val <= base_val:
-				self._pad_override_active[pad_index] = 0
-				self._pad_override_colors[pad_index] = 0
-				if self._osd.pad_colors[pad_index] != base_val:
-					self._osd.pad_colors[pad_index] = base_val
-					try:
-						self._pad_colors_cache[pad_index] = base_val
-					except Exception:
-						pass
-					self._schedule_pad_colors_update()
-				return
-			if val <= base_val:
-				return
-			if base_val == val and not self._pad_override_active[pad_index]:
 				return
 			self._pad_override_active[pad_index] = 1
 			self._pad_override_colors[pad_index] = val
