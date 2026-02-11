@@ -806,6 +806,11 @@ class Launchpad(ControlSurface):
 				non_feedback_channel = 15
 			pad_index = -1
 			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, channel)
+			try:
+				int(channel)
+				allow_note_only_fallback = False
+			except Exception:
+				pass
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
 					key = self._note_map_key(note, channel)

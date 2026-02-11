@@ -353,3 +353,17 @@
   - Added `_dynamic_pad_index_to_note_key` bookkeeping to prune stale `(note, channel)` keys when a pad's dynamic mapping changes.
   - Reset this bookkeeping in `clear_pad_colors()`.
   - In dynamic feedback overlay handling, removed `val <= base_val` suppression so nonzero played/held-note feedback is always visible and still restored on note-off.
+
+## 2026-02-11 - Instrument channel-strict overlay resolution and template-preserving buttons
+
+- File changed: `Launchpad.py`
+- Change type: Dynamic mapping strictness refinement
+- Details:
+  - In `_update_pad_colors_from_midi()` dynamic branch, disable note-only fallback whenever a MIDI channel is present.
+  - Keep resolution channel-aware (`(note, channel)` map + matrix channel match) to prevent wrong-pad overlays in instrument views.
+
+- File changed: `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: Button color override refinement
+- Details:
+  - In `push_button_colors_to_jweb()`, ignore zero button-color updates (only mirror nonzero values).
+  - Prevents Live's zeroed button arrays from wiping top/side template colors (e.g. right-side top buttons) during instrument mode transitions.
