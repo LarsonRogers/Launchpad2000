@@ -61,6 +61,7 @@ var pad_rgb_dict_name = "pad_rgb";
 var pad_rgb_dict = null;
 var pad_cell_dicts = null;
 var pad_cell_dicts_ready = 0;
+var pad_rgb_seeded = 0;
 ensure_pad_dict();
 var last_pad_velocities = [];
 var last_button_velocities = [];
@@ -68,6 +69,8 @@ var last_pad_colors = null;
 var last_button_colors = null;
 var snapshot_dict_name = "osd_snapshot";
 var snapshot_dict = null;
+var snapshot_seeded = 0;
+ensure_snapshot_dict();
 var manifest_data = null;
 var manifest_path = "";
 var manifest_root = "";
@@ -359,6 +362,34 @@ function ensure_snapshot_dict() {
     if (!snapshot_dict) {
         snapshot_dict = new Dict(snapshot_dict_name);
     }
+    seed_snapshot_dict();
+}
+
+function make_empty_snapshot_template() {
+    var tpl = { id: "session", name: "Session Mode", snapshot: { t: [], g: [], s: [] } };
+    var i = 0;
+    for (i = 0; i < 8; i++) {
+        tpl.snapshot.t.push({ label: "", color: "" });
+        tpl.snapshot.s.push({ label: "", color: "" });
+    }
+    for (var r = 0; r < 8; r++) {
+        var row = [];
+        for (var c = 0; c < 8; c++) {
+            row.push({ label: "", color: "" });
+        }
+        tpl.snapshot.g.push(row);
+    }
+    return tpl;
+}
+
+function seed_snapshot_dict() {
+    if (snapshot_seeded) { return; }
+    if (!snapshot_dict) { return; }
+    try {
+        snapshot_dict.parse(JSON.stringify(make_empty_snapshot_template()));
+        snapshot_dict.set("updated_at", 0);
+        snapshot_seeded = 1;
+    } catch (e) { }
 }
 
 function resolve_template_file(file_path) {
@@ -562,6 +593,7 @@ function ensure_pad_dict() {
         pad_rgb_dict = new Dict(pad_rgb_dict_name);
     }
     ensure_pad_cell_dicts();
+    seed_pad_rgb_dicts();
 }
 
 function ensure_pad_cell_dicts() {
@@ -597,6 +629,40 @@ function set_cell_dict_rgb(id, rgb) {
         pad_cell_dicts[id].set("g", rgb[1]);
         pad_cell_dicts[id].set("b", rgb[2]);
     } catch (e) { }
+}
+
+function seed_pad_rgb_dicts() {
+    if (pad_rgb_seeded) { return; }
+    if (!pad_colors_dict || !pad_rgb_dict) { return; }
+    var i = 0;
+    for (i = 0; i < 64; i++) {
+        var gid = pad_id_from_index(i);
+        try {
+            pad_colors_dict.set("pad_rgb::" + gid + "::r", 0);
+            pad_colors_dict.set("pad_rgb::" + gid + "::g", 0);
+            pad_colors_dict.set("pad_rgb::" + gid + "::b", 0);
+            pad_rgb_dict.set(gid + "::r", 0);
+            pad_rgb_dict.set(gid + "::g", 0);
+            pad_rgb_dict.set(gid + "::b", 0);
+            set_cell_dict_rgb(gid, [0, 0, 0]);
+        } catch (e1) { }
+    }
+    for (i = 0; i < 16; i++) {
+        var bid = button_id_from_index(i);
+        if (!bid) { continue; }
+        try {
+            pad_colors_dict.set("pad_rgb::" + bid + "::r", 0);
+            pad_colors_dict.set("pad_rgb::" + bid + "::g", 0);
+            pad_colors_dict.set("pad_rgb::" + bid + "::b", 0);
+            pad_rgb_dict.set(bid + "::r", 0);
+            pad_rgb_dict.set(bid + "::g", 0);
+            pad_rgb_dict.set(bid + "::b", 0);
+            set_cell_dict_rgb(bid, [0, 0, 0]);
+        } catch (e2) { }
+    }
+    try { pad_colors_dict.set("updated_at", 0); } catch (e3) { }
+    try { pad_rgb_dict.set("updated_at", 0); } catch (e4) { }
+    pad_rgb_seeded = 1;
 }
 
 function push_pad_colors_to_jweb(pad_values) {
