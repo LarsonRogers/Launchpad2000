@@ -65,6 +65,7 @@ var pad_rgb_seeded = 0;
 ensure_pad_dict();
 var last_pad_velocities = [];
 var last_button_velocities = [];
+var button_nonzero_seen = [];
 var last_pad_colors = null;
 var last_button_colors = null;
 var snapshot_dict_name = "osd_snapshot";
@@ -701,8 +702,11 @@ function push_button_colors_to_jweb(button_values) {
     var changed = 0;
     for (var i = 0; i < 16; i++) {
         var vel = Number(button_values[i]) || 0;
-        if (vel <= 0) {
+        if (!button_nonzero_seen[i] && vel <= 0) {
             continue;
+        }
+        if (vel > 0) {
+            button_nonzero_seen[i] = 1;
         }
         if (last_button_velocities[i] !== vel) {
             last_button_velocities[i] = vel;

@@ -367,3 +367,17 @@
 - Details:
   - In `push_button_colors_to_jweb()`, ignore zero button-color updates (only mirror nonzero values).
   - Prevents Live's zeroed button arrays from wiping top/side template colors (e.g. right-side top buttons) during instrument mode transitions.
+
+## 2026-02-11 - Stabilize top-button startup colors and keep instrument clear grid-scoped
+
+- File changed: `Launchpad.py`
+- Change type: Additive grid-clear refinement
+- Details:
+  - Updated `clear_pad_grid_colors()` to clear only the 8x8 pad grid state/dynamic mappings and leave top/side button color state intact.
+  - This prevents Instrument-mode transitions from blanking top-button colors in the OSD.
+
+- Files changed: `M4L_Devices/js/osd_bridge.js`, `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: Additive startup zero-gating correction
+- Details:
+  - Restored `button_nonzero_seen[]` gating in `push_button_colors_to_jweb()`: ignore zero writes only before a button has ever emitted nonzero.
+  - After first nonzero, allow both nonzero and zero updates so per-button cache does not get stuck and mode transitions can repaint correctly.

@@ -447,6 +447,26 @@ class Launchpad(ControlSurface):
 		self._schedule_pad_colors_update()
 
 	def clear_pad_grid_colors(self):
+		if self._osd is not None:
+			if hasattr(self._osd, "pad_colors"):
+				for i in range(len(self._osd.pad_colors)):
+					self._osd.pad_colors[i] = 0
+			if hasattr(self, "_pad_colors_cache"):
+				self._pad_colors_cache = [0 for _ in range(64)]
+			if hasattr(self, "_pad_base_colors"):
+				self._pad_base_colors = [0 for _ in range(64)]
+			if hasattr(self, "_pad_override_active"):
+				self._pad_override_active = [0 for _ in range(64)]
+			if hasattr(self, "_pad_override_colors"):
+				self._pad_override_colors = [0 for _ in range(64)]
+			if hasattr(self, "_dynamic_note_to_pad_index"):
+				self._dynamic_note_to_pad_index = {}
+			if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+				self._dynamic_note_to_pad_index_by_note = {}
+			if hasattr(self, "_dynamic_pad_index_to_note_key"):
+				self._dynamic_pad_index_to_note_key = {}
+			self._schedule_pad_colors_update()
+			return
 		self.clear_pad_colors()
 
 	def _use_dynamic_note_map(self):
