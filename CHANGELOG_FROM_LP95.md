@@ -281,3 +281,17 @@
   - In instrument mode, only apply note overlays when the incoming LED velocity exceeds the base layout value; if the value drops to the base, clear the overlay. This avoids layout bleed from conflicting note messages.
   - Treat instrument base-layout LEDs as channel `base_channel + 4` and route those to the base layer while leaving feedback channels for the active-note overlay.
   - Cache outgoing LED values even before `M4LInterface` exists, so the grid can populate immediately after the device UI loads.
+
+## 2026-02-11 - Fix instrument dynamic pad-color mapping fallback ambiguity
+
+- File changed: `Launchpad.py`
+- Change type: Additive dynamic resolution hardening + gated diagnostics
+- Details:
+  - Added `_allow_dynamic_note_only_fallback(channel)` and `_debug_dynamic_note_resolution(...)`.
+  - Added `self._dynamic_note_map_debug = False` (off by default) to keep dynamic mapping diagnostics fully gated unless explicitly enabled.
+  - In dynamic note mapping paths (`_pad_index_from_note` and `_update_pad_colors_from_midi`), changed resolution order to:
+    - channel-aware cache lookup (`(note, channel)` key) first
+    - channel-aware matrix lookup (`note + channel`) second
+    - note-only fallbacks only when channel metadata is unavailable
+  - This prevents incorrect note-only fallback hits when Instrument mode intentionally duplicates note identifiers across channels.
+  - Non-dynamic/static pad mapping behavior is unchanged, preserving upstream LP95 mode behavior outside Launchpad2000's additive OSD/dynamic mapping extensions.

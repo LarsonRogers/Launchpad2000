@@ -83,6 +83,7 @@ class Launchpad(ControlSurface):
 			self._static_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index = {}
 			self._dynamic_note_to_pad_index_by_note = {}
+			self._dynamic_note_map_debug = False
 			self._pad_colors_cache = [0 for _ in range(64)]
 			self._button_colors_cache = [0 for _ in range(16)]
 			self._challenge = Live.Application.get_random_int(0, 400000000) & 2139062143
@@ -518,6 +519,34 @@ class Launchpad(ControlSurface):
 			return None
 		return (c << 8) + n
 
+	def _allow_dynamic_note_only_fallback(self, channel):
+		if channel is None:
+			return True
+		try:
+			int(channel)
+		except Exception:
+			return True
+		return False
+
+	def _debug_dynamic_note_resolution(self, context, note, channel, source, pad_index):
+		try:
+			if not getattr(self, "_dynamic_note_map_debug", False):
+				return
+		except Exception:
+			return
+		try:
+			n = int(note) & 127
+		except Exception:
+			n = note
+		try:
+			ch = int(channel) & 15
+		except Exception:
+			ch = "None"
+		try:
+			self.log_message("LP2000 dynamic-map " + str(context) + " note=" + str(n) + " ch=" + str(ch) + " source=" + str(source) + " pad=" + str(pad_index))
+		except Exception:
+			pass
+
 	def _pad_index_from_note(self, note, channel=None):
 		note = int(note) & 127
 		use_dynamic = False
@@ -536,10 +565,12 @@ class Launchpad(ControlSurface):
 				except Exception:
 					idx = -1
 				if idx is not None and idx >= 0 and idx < 64:
+					self._debug_dynamic_note_resolution("pad_index", note, ch, "static_ch15", idx)
 					return idx
 		if use_dynamic and hasattr(self, "_dynamic_note_to_pad_index"):
+			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(ch)
 			try:
-				key = self._note_map_key(note, channel)
+				key = self._note_map_key(note, ch)
 				if key is None:
 					idx = -1
 				else:
@@ -547,20 +578,31 @@ class Launchpad(ControlSurface):
 			except Exception:
 				idx = -1
 			if idx is not None and idx >= 0 and idx < 64:
+				self._debug_dynamic_note_resolution("pad_index", note, ch, "dynamic_key", idx)
 				return idx
-			idx = self._find_pad_index_in_matrix(note, channel)
+			idx = self._find_pad_index_in_matrix(note, ch)
 			if idx is not None and idx >= 0 and idx < 64:
 				if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 					self._dynamic_note_to_pad_index_by_note[note] = idx
+				self._debug_dynamic_note_resolution("pad_index", note, ch, "matrix_note_channel", idx)
 				return idx
-			if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			if allow_note_only_fallback and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 				try:
 					idx = self._dynamic_note_to_pad_index_by_note.get(note, -1)
 				except Exception:
 					idx = -1
 				if idx is not None and idx >= 0 and idx < 64:
+					self._debug_dynamic_note_resolution("pad_index", note, ch, "note_only_cache", idx)
+					return idx
+			if allow_note_only_fallback:
+				idx = self._find_pad_index_in_matrix(note, None)
+				if idx is not None and idx >= 0 and idx < 64:
+					if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+						self._dynamic_note_to_pad_index_by_note[note] = idx
+					self._debug_dynamic_note_resolution("pad_index", note, ch, "matrix_note_only", idx)
 					return idx
 			# In dynamic (instrument) mode, ignore notes not mapped to pads.
+			self._debug_dynamic_note_resolution("pad_index", note, ch, "dynamic_unresolved", -1)
 			return -1
 		if (not use_dynamic) and hasattr(self, "_static_note_to_pad_index"):
 			try:
@@ -695,6 +737,7 @@ class Launchpad(ControlSurface):
 			in_dynamic = False
 		if in_dynamic:
 			pad_index = -1
+			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(channel)
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
 					key = self._note_map_key(note, channel)
@@ -702,17 +745,22 @@ class Launchpad(ControlSurface):
 						pad_index = self._dynamic_note_to_pad_index.get(key, -1)
 				except Exception:
 					pad_index = -1
-			if pad_index < 0 and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			if pad_index < 0:
+				pad_index = self._find_pad_index_in_matrix(note, channel)
+			if pad_index < 0 and allow_note_only_fallback and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 				try:
 					pad_index = self._dynamic_note_to_pad_index_by_note.get(note, -1)
 				except Exception:
 					pad_index = -1
-			if pad_index < 0:
-				pad_index = self._find_pad_index_in_matrix(note, channel)
-			if pad_index < 0:
+			if pad_index < 0 and allow_note_only_fallback:
 				pad_index = self._find_pad_index_in_matrix(note, None)
 			if pad_index < 0 or pad_index >= 64:
+				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_unresolved", -1)
 				return
+			if allow_note_only_fallback:
+				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_fallback_enabled", pad_index)
+			else:
+				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_channel_strict", pad_index)
 			non_feedback_channel = 15
 			try:
 				if self._selector is not None and hasattr(self._selector, "_instrument_controller"):
