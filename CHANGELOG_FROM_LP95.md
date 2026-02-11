@@ -270,6 +270,7 @@
   - Force dictionary creation at script load (not just `loadbang`) so patcher dictwrap objects can bind immediately.
   - Add a short JWeb boot retry task that re-sends snapshot/pad colors until the UI is ready, so the grid doesn't start grey.
   - During JWeb boot retries, call `update()` to pull fresh pad/button colors from LiveAPI before re-sending.
+  - Ensure the initial `ensure_pad_dict()` call occurs after pad dict names are defined, preventing unnamed dict creation.
 
 ## 2026-02-10 - Refresh OSD state after init, gate instrument overlays
 

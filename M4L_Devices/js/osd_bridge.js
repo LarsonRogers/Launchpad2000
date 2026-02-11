@@ -61,6 +61,7 @@ var pad_rgb_dict_name = "pad_rgb";
 var pad_rgb_dict = null;
 var pad_cell_dicts = null;
 var pad_cell_dicts_ready = 0;
+ensure_pad_dict();
 var last_pad_velocities = [];
 var last_button_velocities = [];
 var last_pad_colors = null;
