@@ -519,14 +519,61 @@ class Launchpad(ControlSurface):
 			return None
 		return (c << 8) + n
 
-	def _allow_dynamic_note_only_fallback(self, channel):
+	def _is_dynamic_note_ambiguous(self, note):
+		try:
+			n = int(note) & 127
+		except Exception:
+			return False
+		pad_indices = set()
+		if hasattr(self, "_dynamic_note_to_pad_index"):
+			try:
+				for key, idx in self._dynamic_note_to_pad_index.items():
+					try:
+						if (int(key) & 127) != n:
+							continue
+						pad_idx = int(idx)
+					except Exception:
+						continue
+					if pad_idx >= 0 and pad_idx < 64:
+						pad_indices.add(pad_idx)
+						if len(pad_indices) > 1:
+							return True
+			except Exception:
+				pass
+		if len(pad_indices) <= 1:
+			matrix = None
+			try:
+				if self._selector is not None and hasattr(self._selector, "_matrix"):
+					matrix = self._selector._matrix
+			except Exception:
+				matrix = None
+			if matrix is None and hasattr(self, "_matrix"):
+				matrix = self._matrix
+			if matrix is not None:
+				try:
+					for button, (x, y) in matrix.iterbuttons():
+						if not button or (not hasattr(button, "_lp_pad_index")):
+							continue
+						btn_id = self._get_matrix_button_id(button)
+						if btn_id is None or int(btn_id) != n:
+							continue
+						pad_idx = int(button._lp_pad_index)
+						if pad_idx >= 0 and pad_idx < 64:
+							pad_indices.add(pad_idx)
+							if len(pad_indices) > 1:
+								return True
+				except Exception:
+					pass
+		return False
+
+	def _allow_dynamic_note_only_fallback(self, note, channel):
 		if channel is None:
 			return True
 		try:
 			int(channel)
 		except Exception:
 			return True
-		return False
+		return not self._is_dynamic_note_ambiguous(note)
 
 	def _debug_dynamic_note_resolution(self, context, note, channel, source, pad_index):
 		try:
@@ -568,7 +615,7 @@ class Launchpad(ControlSurface):
 					self._debug_dynamic_note_resolution("pad_index", note, ch, "static_ch15", idx)
 					return idx
 		if use_dynamic and hasattr(self, "_dynamic_note_to_pad_index"):
-			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(ch)
+			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, ch)
 			try:
 				key = self._note_map_key(note, ch)
 				if key is None:
@@ -737,7 +784,7 @@ class Launchpad(ControlSurface):
 			in_dynamic = False
 		if in_dynamic:
 			pad_index = -1
-			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(channel)
+			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, channel)
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
 					key = self._note_map_key(note, channel)

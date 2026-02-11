@@ -292,6 +292,15 @@
   - In dynamic note mapping paths (`_pad_index_from_note` and `_update_pad_colors_from_midi`), changed resolution order to:
     - channel-aware cache lookup (`(note, channel)` key) first
     - channel-aware matrix lookup (`note + channel`) second
-    - note-only fallbacks only when channel metadata is unavailable
+  - note-only fallbacks only when channel metadata is unavailable
   - This prevents incorrect note-only fallback hits when Instrument mode intentionally duplicates note identifiers across channels.
   - Non-dynamic/static pad mapping behavior is unchanged, preserving upstream LP95 mode behavior outside Launchpad2000's additive OSD/dynamic mapping extensions.
+
+## 2026-02-11 - Refine dynamic fallback gating to preserve OSD rendering
+
+- File changed: `Launchpad.py`
+- Change type: Additive ambiguity-aware fallback gate
+- Details:
+  - Added `_is_dynamic_note_ambiguous(note)` to detect when a note maps to multiple pad indices in the current dynamic cache/matrix.
+  - Updated `_allow_dynamic_note_only_fallback(...)` to allow note-only fallback when channel is missing/unparseable OR when the note is unambiguous.
+  - This keeps strict channel-first behavior for ambiguous Instrument-note cases while restoring safe fallback behavior for unique-note paths, preventing blank OSD grids when strict channel matching is unavailable.
