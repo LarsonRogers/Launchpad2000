@@ -791,13 +791,8 @@ class Launchpad(ControlSurface):
 						non_feedback_channel = (int(ic.base_channel) + 4) & 15
 			except Exception:
 				non_feedback_channel = 15
-			try:
-				feedback_channel = int(channel) != int(non_feedback_channel)
-			except Exception:
-				feedback_channel = True
 			pad_index = -1
 			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, channel)
-			allow_feedback_note_only_fallback = allow_note_only_fallback or feedback_channel
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
 					key = self._note_map_key(note, channel)
@@ -807,17 +802,17 @@ class Launchpad(ControlSurface):
 					pad_index = -1
 			if pad_index < 0:
 				pad_index = self._find_pad_index_in_matrix(note, channel)
-			if pad_index < 0 and allow_feedback_note_only_fallback and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			if pad_index < 0 and allow_note_only_fallback and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
 				try:
 					pad_index = self._dynamic_note_to_pad_index_by_note.get(note, -1)
 				except Exception:
 					pad_index = -1
-			if pad_index < 0 and allow_feedback_note_only_fallback:
+			if pad_index < 0 and allow_note_only_fallback:
 				pad_index = self._find_pad_index_in_matrix(note, None)
 			if pad_index < 0 or pad_index >= 64:
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_unresolved", -1)
 				return
-			if allow_feedback_note_only_fallback:
+			if allow_note_only_fallback:
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_fallback_enabled", pad_index)
 			else:
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_channel_strict", pad_index)

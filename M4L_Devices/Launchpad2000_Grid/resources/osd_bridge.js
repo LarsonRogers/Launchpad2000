@@ -437,12 +437,12 @@ function snapshot_labels_only(template) {
     var out_snap = {};
     if (snap.t && snap.t.length !== undefined) {
         var tops = [];
-        for (var ti = 0; ti < snap.t.length; ti++) { tops.push(strip_color(snap.t[ti])); }
+        for (var ti = 0; ti < snap.t.length; ti++) { tops.push(snap.t[ti]); }
         out_snap.t = tops;
     }
     if (snap.s && snap.s.length !== undefined) {
         var sides = [];
-        for (var si = 0; si < snap.s.length; si++) { sides.push(strip_color(snap.s[si])); }
+        for (var si = 0; si < snap.s.length; si++) { sides.push(snap.s[si]); }
         out_snap.s = sides;
     }
     if (snap.g && snap.g.length !== undefined) {

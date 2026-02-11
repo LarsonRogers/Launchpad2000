@@ -107,6 +107,30 @@ class ConfigurableButtonElement(ButtonElement):
 				self._control_surface._update_note_to_pad_index(identifier, self._lp_pad_index, ch)
 			except Exception:
 				pass
+
+	def set_channel(self, channel):
+		super(ConfigurableButtonElement, self).set_channel(channel)
+		if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+			try:
+				identifier = None
+				try:
+					identifier = self.message_identifier()
+				except Exception:
+					try:
+						identifier = self._msg_identifier
+					except Exception:
+						identifier = None
+				ch = None
+				try:
+					ch = self.message_channel()
+				except Exception:
+					try:
+						ch = self._msg_channel
+					except Exception:
+						ch = None
+				self._control_surface._update_note_to_pad_index(identifier, self._lp_pad_index, ch)
+			except Exception:
+				pass
 			
 	def force_next_send(self):
 		"""

@@ -317,5 +317,24 @@
 - Change type: Additive dynamic feedback fallback refinement
 - Details:
   - In `_update_pad_colors_from_midi()`, resolve `non_feedback_channel` before dynamic fallback decisions.
-  - Allow note-only fallback for feedback-note channels even when ambiguity gating would otherwise disable it.
-  - Keep base-layout (`non_feedback_channel`) path channel-aware, preserving the prior wrong-pad fix while restoring visible played-note overlays in instrument/drum views.
+  - Keep base-layout (`non_feedback_channel`) path channel-aware for dynamic note resolution.
+
+## 2026-02-11 - Refine startup top/side colors and dynamic channel-map stability
+
+- File changed: `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: Additive snapshot handling fix
+- Details:
+  - Updated `snapshot_labels_only()` to preserve top/side template cell colors (`t`/`s`) while still stripping grid (`g`) colors.
+  - This restores expected initial coloring for top/side controls before live LED state arrives.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive dynamic mapping synchronization
+- Details:
+  - Added `set_channel()` override to refresh `_update_note_to_pad_index(...)` using the current identifier whenever a button's channel changes.
+  - This keeps dynamic `(note, channel)` pad mappings aligned when instrument channel assignments change without identifier changes.
+
+- File changed: `Launchpad.py`
+- Change type: Dynamic fallback rollback
+- Details:
+  - Removed feedback-channel-specific note-only fallback in `_update_pad_colors_from_midi()`.
+  - This prevents reintroducing wrong-pad mappings in ambiguous duplicate-note instrument layouts while retaining strict channel-first resolution.
