@@ -119,12 +119,32 @@ class ConfigurableButtonElement(ButtonElement):
 		
 	def _do_send_on_value(self, **k):
 		if type(self._on_value) is int:
+			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+				try:
+					self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._on_value)
+				except Exception:
+					pass
+			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
+				try:
+					self._control_surface._update_button_color_from_index(self._lp_button_index, self._on_value)
+				except Exception:
+					pass
 			super(ConfigurableButtonElement, self).send_value(self._on_value, **k)
 		else:
 			self._draw_skin(self._on_value)
 			
 	def _do_send_off_value(self, **k):
 		if type(self._off_value) is int:
+			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+				try:
+					self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._off_value)
+				except Exception:
+					pass
+			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
+				try:
+					self._control_surface._update_button_color_from_index(self._lp_button_index, self._off_value)
+				except Exception:
+					pass
 			super(ConfigurableButtonElement, self).send_value(self._off_value, **k)
 		else:
 			self._draw_skin(self._off_value)

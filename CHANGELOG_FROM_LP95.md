@@ -304,3 +304,18 @@
   - Added `_is_dynamic_note_ambiguous(note)` to detect when a note maps to multiple pad indices in the current dynamic cache/matrix.
   - Updated `_allow_dynamic_note_only_fallback(...)` to allow note-only fallback when channel is missing/unparseable OR when the note is unambiguous.
   - This keeps strict channel-first behavior for ambiguous Instrument-note cases while restoring safe fallback behavior for unique-note paths, preventing blank OSD grids when strict channel matching is unavailable.
+
+## 2026-02-11 - Improve button LED mirroring and instrument note feedback visibility
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Additive button-color forwarding
+- Details:
+  - In `_do_send_on_value()` / `_do_send_off_value()`, when on/off states are integer MIDI values, mirror those values to OSD caches (`_update_button_color_from_index` / `_update_pad_color_from_index`) before forwarding MIDI.
+  - This improves reliability of top/side button color mirroring for controls that use direct integer on/off values.
+
+- File changed: `Launchpad.py`
+- Change type: Additive dynamic feedback fallback refinement
+- Details:
+  - In `_update_pad_colors_from_midi()`, resolve `non_feedback_channel` before dynamic fallback decisions.
+  - Allow note-only fallback for feedback-note channels even when ambiguity gating would otherwise disable it.
+  - Keep base-layout (`non_feedback_channel`) path channel-aware, preserving the prior wrong-pad fix while restoring visible played-note overlays in instrument/drum views.
