@@ -258,7 +258,61 @@
 - File changed: `M4L_Devices/js/osd_bridge.js`
 - Change type: Additive dictionary mirroring
 - Details:
-  - Added a `pad_rgb` dictionary mirror (`g00::r/g/b`, `t0::r/g/b`, `s0::r/g/b`) to satisfy `dictwrap pad_rgb` consumers and eliminate missing-dict console errors.
+
+## 2026-02-14 - Fix Instrument OSD LED mirror divergence and add trace logging
+
+- File changed: `Launchpad.py`
+- Change type: Instrument-mode cache path correction + additive diagnostics
+- Details:
+  - Added a temporary 30-second LED trace window in `_send_midi()` (active when `Settings.LOGGING` is enabled and instrument dynamic mapping is active):
+    - logs outgoing bytes, message type/channel, whether cache update path was called, and pad/button cache delta counts.
+  - In `_update_pad_colors_from_midi()` dynamic (instrument) branch:
+    - removed channel-gated override/base split that treated many instrument LED updates as transient overlays.
+    - removed the unconditional fallback disable that prevented note-only fallback in dynamic note mapping.
+    - now mirrors each mapped dynamic note LED message directly to the pad cache via `_update_pad_color_from_index(...)`.
+    - clears stale per-pad override flags before applying the mirrored value.
+  - Added `import time` for bounded trace timing.
+
+## 2026-02-14 - Enable debug log file by default
+
+- File changed: `Settings.py`
+- Change type: Default debug behavior
+- Details:
+  - Set `LOGGING = True` so `Log.py` writes `log.txt` by default without requiring manual flag changes.
+
+## 2026-02-14 - Add multi-path log file fallbacks
+
+- File changed: `Log.py`
+- Change type: Additive logging reliability
+- Details:
+  - Added fallback log targets:
+    - `~/Documents/Ableton/User Library/Remote Scripts/log.txt`
+    - `~/OneDrive/Documents/Ableton/User Library/Remote Scripts/log.txt`
+    - script-local `log.txt` in the loaded Remote Script folder
+  - Added safe append/write helpers so logging failures at one path do not block writes to others.
+  - Startup log separator and runtime `log(...)` entries now write to all configured targets.
+
+## 2026-02-14 - Normalize LiveAPI list parsing in OSD bridge
+
+- Files changed:
+  - `M4L_Devices/js/osd_bridge.js`
+  - `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: Additive bridge parsing hardening
+- Details:
+  - Updated `api_get_list(...)` to normalize LiveAPI responses that can arrive as:
+    - array-like atom lists
+    - scalar values
+    - encoded strings
+  - Added optional removal of a leading property-name token (when present in LiveAPI responses).
+  - This keeps `pad_colors` and `button_colors` indexing aligned for JWeb rendering.
+
+## 2026-02-14 - Extend instrument LED trace at cache write boundary
+
+- File changed: `Launchpad.py`
+- Change type: Additive diagnostics
+- Details:
+  - Added trace lines in `_update_pad_color_from_index(...)` and `_update_button_color_from_index(...)` while the 30-second instrument trace window is active.
+  - Logs include cache index/value writes (`pad_cache`, `button_cache`) to verify whether note/button activity reaches `M4LInterface` arrays even when outgoing MIDI message traces are sparse.
 
 ## 2026-02-10 - Precreate pad dictionaries for Max dictwrap
 

@@ -275,7 +275,28 @@ function api_get_list(api, property_name) {
     if (!api || !property_name) { return []; }
     try {
         var v = api.get(property_name);
-        return v || [];
+        if (v === undefined || v === null) { return []; }
+        var out = [];
+        var i = 0;
+
+        // LiveAPI can return array-like atoms, plain scalars, or encoded strings.
+        if (typeof v === "string") {
+            var s = v.replace(/[\[\],]/g, " ").replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
+            if (s.length > 0) { out = s.split(" "); }
+        } else if (v.length !== undefined) {
+            for (i = 0; i < v.length; i++) { out.push(v[i]); }
+        } else {
+            out = [v];
+        }
+
+        // Some LiveAPI responses prefix the property name; drop it when present.
+        if (out.length > 0) {
+            var head = ("" + out[0]).toLowerCase();
+            if (head === ("" + property_name).toLowerCase()) {
+                out.shift();
+            }
+        }
+        return out;
     } catch (e) {
         return [];
     }

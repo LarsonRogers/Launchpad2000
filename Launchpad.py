@@ -1,6 +1,7 @@
 from __future__ import with_statement
 
 import traceback
+import time
 
 import Live
 from _Framework.ControlSurface import ControlSurface
@@ -364,10 +365,67 @@ class Launchpad(ControlSurface):
 
 	def _send_midi(self, midi_bytes, optimized=None):
 		sent_successfully = False
+		should_trace = False
+		trace_before_pad = None
+		trace_before_buttons = None
+		trace_called_update = False
+		trace_msg = None
+		if Settings.LOGGING:
+			try:
+				if self._use_dynamic_note_map():
+					if not hasattr(self, "_led_trace_until") or self._led_trace_until <= 0:
+						self._led_trace_until = time.time() + 30.0
+						log("LP2000 LED TRACE start (instrument dynamic mode) for 30 seconds")
+					should_trace = time.time() <= self._led_trace_until
+			except Exception:
+				should_trace = False
+		if should_trace:
+			try:
+				trace_before_pad = list(self._pad_colors_cache)
+				trace_before_buttons = list(self._button_colors_cache)
+			except Exception:
+				trace_before_pad = None
+				trace_before_buttons = None
+			try:
+				status_byte = int(midi_bytes[0]) & 255
+				status = status_byte & 240
+				channel = status_byte & 15
+				if status == 144:
+					msg_type = "note_on"
+				elif status == 128:
+					msg_type = "note_off"
+				elif status == 176:
+					msg_type = "cc"
+				elif status_byte == 240:
+					msg_type = "sysex"
+					channel = -1
+				else:
+					msg_type = "other"
+				trace_msg = "bytes=" + str(tuple(midi_bytes)) + " type=" + str(msg_type) + " ch=" + str(channel)
+			except Exception:
+				trace_msg = "bytes=<parse_error>"
 		if not self._suppress_send_midi:
 			sent_successfully = ControlSurface._send_midi(self, midi_bytes, optimized=optimized)
 			if sent_successfully:
+				trace_called_update = True
 				self._update_pad_colors_from_midi(midi_bytes)
+		if should_trace and trace_before_pad is not None and trace_before_buttons is not None:
+			try:
+				changed_pads = 0
+				changed_buttons = 0
+				for i in range(min(len(trace_before_pad), len(self._pad_colors_cache))):
+					if trace_before_pad[i] != self._pad_colors_cache[i]:
+						changed_pads += 1
+				for i in range(min(len(trace_before_buttons), len(self._button_colors_cache))):
+					if trace_before_buttons[i] != self._button_colors_cache[i]:
+						changed_buttons += 1
+				log("LP2000 LED TRACE " + str(trace_msg) +
+					" sent=" + str(sent_successfully) +
+					" cache_update_called=" + str(trace_called_update) +
+					" pad_changes=" + str(changed_pads) +
+					" button_changes=" + str(changed_buttons))
+			except Exception:
+				pass
 		return sent_successfully
 
 	def _button_index_from_cc(self, cc):
@@ -420,6 +478,13 @@ class Launchpad(ControlSurface):
 		if idx < 0 or idx >= 16:
 			return
 		val = int(velocity) & 127
+		if Settings.LOGGING:
+			try:
+				if hasattr(self, "_led_trace_until") and self._led_trace_until > 0 and time.time() <= self._led_trace_until:
+					if self._use_dynamic_note_map():
+						log("LP2000 LED TRACE button_cache idx=" + str(idx) + " val=" + str(val))
+			except Exception:
+				pass
 		self._update_button_colors(idx, val)
 
 	def clear_pad_colors(self):
@@ -816,21 +881,8 @@ class Launchpad(ControlSurface):
 		except Exception:
 			in_dynamic = False
 		if in_dynamic:
-			non_feedback_channel = 15
-			try:
-				if self._selector is not None and hasattr(self._selector, "_instrument_controller"):
-					ic = self._selector._instrument_controller
-					if ic is not None and hasattr(ic, "base_channel"):
-						non_feedback_channel = (int(ic.base_channel) + 4) & 15
-			except Exception:
-				non_feedback_channel = 15
 			pad_index = -1
 			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, channel)
-			try:
-				int(channel)
-				allow_note_only_fallback = False
-			except Exception:
-				pass
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
 					key = self._note_map_key(note, channel)
@@ -854,42 +906,16 @@ class Launchpad(ControlSurface):
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_fallback_enabled", pad_index)
 			else:
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_channel_strict", pad_index)
-			if int(channel) == int(non_feedback_channel):
-				self._update_pad_color_from_index(pad_index, velocity)
-				return
-			if not hasattr(self, "_pad_base_colors"):
-				self._pad_base_colors = [0 for _ in range(64)]
-			if not hasattr(self, "_pad_override_active"):
-				self._pad_override_active = [0 for _ in range(64)]
-			if not hasattr(self, "_pad_override_colors"):
-				self._pad_override_colors = [0 for _ in range(64)]
-			val = int(velocity) & 127
-			base_val = 0
+			# Instrument mode should mirror the actual outgoing LED stream exactly.
+			# Treat every mapped dynamic note LED message as the current pad state.
 			try:
-				base_val = self._pad_base_colors[pad_index]
-			except Exception:
-				base_val = 0
-			if val == 0:
-				if self._pad_override_active[pad_index]:
+				if hasattr(self, "_pad_override_active"):
 					self._pad_override_active[pad_index] = 0
+				if hasattr(self, "_pad_override_colors"):
 					self._pad_override_colors[pad_index] = 0
-				if self._osd.pad_colors[pad_index] != base_val:
-					self._osd.pad_colors[pad_index] = base_val
-					try:
-						self._pad_colors_cache[pad_index] = base_val
-					except Exception:
-						pass
-					self._schedule_pad_colors_update()
-				return
-			self._pad_override_active[pad_index] = 1
-			self._pad_override_colors[pad_index] = val
-			if self._osd.pad_colors[pad_index] != val:
-				self._osd.pad_colors[pad_index] = val
-				try:
-					self._pad_colors_cache[pad_index] = val
-				except Exception:
-					pass
-				self._schedule_pad_colors_update()
+			except Exception:
+				pass
+			self._update_pad_color_from_index(pad_index, velocity)
 			return
 		pad_index = self._pad_index_from_note(note, channel)
 		if pad_index < 0 or pad_index >= 64:
@@ -914,6 +940,13 @@ class Launchpad(ControlSurface):
 		if idx < 0 or idx >= 64:
 			return
 		val = int(velocity) & 127
+		if Settings.LOGGING:
+			try:
+				if hasattr(self, "_led_trace_until") and self._led_trace_until > 0 and time.time() <= self._led_trace_until:
+					if self._use_dynamic_note_map():
+						log("LP2000 LED TRACE pad_cache idx=" + str(idx) + " val=" + str(val))
+			except Exception:
+				pass
 		if not hasattr(self, "_pad_base_colors"):
 			self._pad_base_colors = [0 for _ in range(64)]
 		if not hasattr(self, "_pad_override_active"):
