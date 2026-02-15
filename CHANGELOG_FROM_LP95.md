@@ -1,5 +1,74 @@
 # CHANGELOG_FROM_LP95
 
+## 2026-02-14 - Stabilize Instrument OSD LED mirror in Max bridge
+
+- File changed: `Launchpad.py`
+- Change type: Instrument-mode MK1 pad mapping hardening
+- Details:
+  - In `_update_pad_colors_from_midi(...)`, added an Instrument MK1 fast-path that maps note LEDs directly to static MK1 grid indices (`0..7,16..23,...`) and bypasses dynamic note-map fallback cache lookups.
+  - This prevents stale dynamic remap bleed from writing Instrument LED updates to incorrect pad indices.
+  - Added channel-15 static-grid fallback in dynamic note mapping (notably for MK2/MK3/LPX feedback paths) so note LEDs that arrive on channel 15 still resolve to a pad index.
+  - Added a second static-grid fallback for MK2/MK3/LPX when dynamic lookup fails entirely (before dropping the LED update), covering physical-grid feedback note IDs.
+  - Added targeted debug logs for active-note propagation:
+    - `LP2000 HW MODEL ...` during init to confirm runtime hardware classification.
+    - `LP2000 ACTIVE NOTE MAP ...` in `_update_pad_colors_from_midi(...)` (note/channel/index/velocity, MK2 flag).
+    - `LP2000 ACTIVE NOTE MISS ...` when a non-zero dynamic note LED cannot be mapped to a pad index.
+    - `LP2000 ACTIVE PAD WRITE ...` in `_update_pad_color_from_index(...)` when Instrument mode writes a non-zero velocity.
+  - Fixed `_use_dynamic_note_map()` gating to treat active Instrument `mode_id` as authoritative and to resolve `USER_MODES_1[sub_index] == "instrument"` instead of assuming a fixed sub-index value. This keeps Instrument LED updates on the dynamic mapping path.
+  - Added dynamic feedback mirror path from inbound MIDI:
+    - New `receive_midi(...)` hook calls `_mirror_dynamic_feedback_from_input(...)` before delegating to `ControlSurface.receive_midi(...)`.
+    - `_mirror_dynamic_feedback_from_input(...)` resolves incoming note/channel to pad index via dynamic note maps and applies note-on/note-off state as pad overrides in Instrument mode.
+    - Added `_set_pad_feedback_override(...)` to store/clear temporary active-note overlays and restore base pad color on note-off.
+    - Added `_instrument_feedback_velocity()` to map active-note overlay color to current feedback velocity skin entries.
+    - Added `LP2000 ACTIVE NOTE MAP ... src=input` log line for inbound mapped feedback events.
+  - Added active-note source tagging for Instrument mode:
+    - `src=output` logging on mapped dynamic output LED messages (including MK1 fast-path and dynamic resolution path).
+    - `src=output` tagging on dynamic map misses.
+  - Added API fallback path for active-note highlighting when Live bypasses script input:
+    - Installed `current_song_time` listener in `Launchpad` init.
+    - Added `_update_active_notes_from_api()` to read currently playing clip notes on the Instrument track and derive active pad indices from the dynamic note map.
+    - Added temporary overlay application/removal for API-active pads via `_set_pad_feedback_override(...)`.
+    - Added `LP2000 ACTIVE NOTE MAP src=api ...` diagnostic when API active-pad set changes.
+    - Added cleanup for listeners and clip bindings in `disconnect()`.
+
+- File changed: `M4LInterface.py`
+- Change type: Additive M4LInterface property extension
+- Details:
+  - Added `active_note_source` property (`none|input|output|api`) so bridge/JWeb can report which boundary currently drives active-note mapping.
+
+- File changed: `ConfigurableButtonElement.py`
+- Change type: Instrument dynamic-mode cache contamination guard
+- Details:
+  - Added `_should_precache_pad_mirror()` and gated pre-send pad cache writes in:
+    - `send_value(...)`,
+    - `_do_send_on_value(...)`,
+    - `_do_send_off_value(...)`.
+  - In dynamic Instrument mapping, pad cache pre-writes are skipped so cache mirrors actual outgoing/incoming LED state rather than stale pre-send values.
+
+- File changed: `M4L_Devices/js/osd_bridge.js`
+- File changed: `M4L_Devices/Launchpad2000_Grid/resources/osd_bridge.js`
+- Change type: OSD bridge cache + LiveAPI list normalization fix
+- Details:
+  - Added `normalize_velocity_list(...)` to coerce `pad_colors` (64) and `button_colors` (16) into fixed-length numeric arrays, handling LiveAPI metadata/prefix atoms robustly.
+  - Updated `update(...)` to use normalized arrays before writing `last_pad_colors` / `last_button_colors` and before pushing to JWeb.
+  - Added `reset_velocity_cache()` and called it in `send_snapshot_to_jweb(...)` after loading a new snapshot so template repaint cannot suppress LED re-application due stale "already-sent" velocity cache.
+  - Replaced continuous force repaint with proper cache invalidation:
+    - mode/submode repaint signature tracking (`mode_id` + mode text for Instrument/StepSeq whitelist),
+    - one-shot `reset_velocity_cache()` when signature changes, then normal diffing resumes.
+  - Hardened repaint signatures against transient `mode=0` / blank mode text by retaining the last non-empty mode text, preventing false invalidation cycles like `instrument|` that could momentarily zero UI colors.
+  - Hardened mode resolution against transient LiveAPI `mode_id` blanks by keeping the last canonical `mode_id` instead of immediately falling back to mode-string parsing.
+  - Temporary stopgap: Step Sequencer modes were added to the repaint-signature whitelist alongside Instrument modes.
+  - Added targeted JS diagnostics in `update(...)`:
+    - `LP2000 OSD TRACE invalidate sig=...` when cache invalidation triggers,
+    - `LP2000 OSD TRACE mode_id=... pads=... top=...` probe values from `pad_colors`/`button_colors` after `updateML` (plus hardware model, max velocity, and pad deltas).
+    - OSD probe line now includes `src=...` from `M4LInterface.active_note_source` on every logged update.
+  - Added mode stabilization in bridge mode routing (`settle_mode_id`): new mode_id must appear in two consecutive updates before switching, preventing one-frame bleed into session/device while Instrument remains active.
+  - Added hold-frame color protection: when a candidate mode_id is being held (not yet stable), bridge now reuses last stable pad/button arrays and ignores the transient frame payload (`hold_colors`), preventing one-frame state bleed into Instrument.
+  - Set `LOG_ENABLED = 1` in `osd_bridge.js` for this debugging cycle so probe lines are written to `L95_log.txt` without manual toggling.
+  - Fixed `osd_bridge.js` file logging to append reliably (`readwrite` + seek EOF). This avoids single-line overwrite behavior seen in `L95_log.txt`.
+  - Extended `osd_bridge.js` logging to also append to the shared Remote Scripts `log.txt` path (plus OneDrive/Documents variant), so Python and Max bridge traces can be viewed in one place.
+  - This targets Instrument-mode OSD divergence where hardware LEDs changed but JWeb retained template/stale cells.
+
 ## 2026-02-09 - Initial Launchpad2000 Fork Setup
 
 - File changed: `__init__.py`

@@ -10,6 +10,7 @@ class M4LInterface(ControlSurfaceComponent):
 		self.mode = ' '
 		self.mode_id = ''
 		self.hardware_model = ''
+		self.active_note_source = 'none'
 		self.screenshots_dir = ''
 		self.pad_colors = [0 for _ in range(64)]
 		self.button_colors = [0 for _ in range(16)]

@@ -1,6 +1,6 @@
 outlets = 3;
 autowatch = 1;
-var LOG_ENABLED = 0;
+var LOG_ENABLED = 1;
 if (LOG_ENABLED) { post("OSD_BRIDGE_ACTIVE\n"); }
 
 var l95_osd = null;
@@ -52,6 +52,13 @@ var last_layout_mode_id = "";
 var layout_dirty = 1;
 var last_guide_rect = null;
 var pending_mode_id = "";
+var last_repaint_signature = "";
+var last_probe_log_at = 0;
+var last_mode_text = "";
+var stable_mode_id = "session";
+var candidate_mode_id = "";
+var candidate_mode_hits = 0;
+var last_probe_pad_values = null;
 var mode_update_task = null;
 var mk2_palette = null;
 var hardware_model = "";
@@ -302,6 +309,54 @@ function api_get_list(api, property_name) {
     }
 }
 
+function is_numeric_atom(value) {
+    if (value === undefined || value === null) { return false; }
+    var n = Number(value);
+    return !isNaN(n) && isFinite(n);
+}
+
+function normalize_velocity_list(raw_values, expected_len, property_name) {
+    if (!raw_values || expected_len <= 0) { return []; }
+    var src = [];
+    var i = 0;
+    if (typeof raw_values === "string") {
+        var text = raw_values.replace(/[\[\],]/g, " ").replace(/\s+/g, " ").replace(/^\s+|\s+$/g, "");
+        if (text.length > 0) { src = text.split(" "); }
+    } else if (raw_values.length !== undefined) {
+        for (i = 0; i < raw_values.length; i++) {
+            src.push(raw_values[i]);
+        }
+    } else {
+        src = [raw_values];
+    }
+    if (src.length === 0) { return []; }
+
+    // LiveAPI sometimes prepends a property token (or other metadata atom).
+    while (src.length > expected_len) {
+        var head = ("" + src[0]).toLowerCase();
+        if (head === ("" + property_name).toLowerCase() || !is_numeric_atom(src[0])) {
+            src.shift();
+        } else {
+            break;
+        }
+    }
+
+    // If metadata still exists, keep the newest expected_len atoms.
+    if (src.length > expected_len) {
+        src = src.slice(src.length - expected_len);
+    }
+    if (src.length < expected_len) { return []; }
+
+    var out = [];
+    for (i = 0; i < expected_len; i++) {
+        var vel = Number(src[i]);
+        if (isNaN(vel) || !isFinite(vel)) { vel = 0; }
+        vel = Math.max(0, Math.min(127, Math.round(vel)));
+        out.push(vel);
+    }
+    return out;
+}
+
 function send_status(msg) {
     try { outlet(2, "status", msg); } catch (e) { }
 }
@@ -498,6 +553,8 @@ function send_snapshot_to_jweb(mode_id) {
         snapshot_dict.set("updated_at", new Date().getTime());
         last_snapshot_mode_id = mode_id;
         try { outlet(0, "loadSnapshot", snapshot_dict_name); } catch (e1) { }
+        // Snapshot application repaints template defaults; force a full LED repaint after it.
+        reset_velocity_cache();
         if (last_pad_colors) { push_pad_colors_to_jweb(last_pad_colors); }
         if (last_button_colors) { push_button_colors_to_jweb(last_button_colors); }
     } catch (e) {
@@ -594,6 +651,39 @@ function velocity_to_rgb(velocity) {
     return mk1_velocity_to_rgb(v);
 }
 
+function is_instrument_mode_id(mode_id) {
+    return mode_id === "instrument" || mode_id === "instrument_quick_scale" || mode_id === "instrument_scale";
+}
+
+function is_stepseq_mode_id(mode_id) {
+    if (!mode_id) { return false; }
+    return mode_id === "drum_stepseq_combined" ||
+        mode_id === "drum_stepseq_multinote" ||
+        mode_id === "drum_stepseq_scale" ||
+        mode_id === "melodic_stepseq" ||
+        mode_id === "melodic_stepseq_scale";
+}
+
+function is_force_repaint_mode(mode_id) {
+    // Temporary stopgap whitelist requested during Instrument/StepSeq OSD debugging.
+    return is_instrument_mode_id(mode_id) || is_stepseq_mode_id(mode_id);
+}
+
+function repaint_signature_for_mode(mode_id, mode_val) {
+    var id = mode_id || "session";
+    if (!is_force_repaint_mode(id)) {
+        return id;
+    }
+    // Include mode text to capture subview/submode shifts that keep the same mode_id.
+    var text = mode_val;
+    if (!text || text === "0" || text === " ") {
+        text = last_mode_text || "";
+    } else {
+        last_mode_text = text;
+    }
+    return id + "|" + text;
+}
+
 function pad_id_from_index(i) {
     var row = Math.floor(i / 8);
     var col = i % 8;
@@ -604,6 +694,90 @@ function button_id_from_index(i) {
     if (i >= 0 && i < 8) { return "t" + i; }
     if (i >= 8 && i < 16) { return "s" + (i - 8); }
     return null;
+}
+
+function reset_velocity_cache() {
+    var i = 0;
+    for (i = 0; i < 64; i++) { last_pad_velocities[i] = -1; }
+    for (i = 0; i < 16; i++) { last_button_velocities[i] = -1; }
+}
+
+function log_pad_probe(mode_id, mode_val, pad_colors, button_colors, active_note_src) {
+    if (!log_enabled) { return; }
+    if (!is_force_repaint_mode(mode_id)) { return; }
+    var now = new Date().getTime();
+    if (now - last_probe_log_at < 250) { return; }
+    last_probe_log_at = now;
+    var probe_idx = [0, 8, 16, 24, 32, 40, 48, 56, 63];
+    var probe_vals = [];
+    var i = 0;
+    for (i = 0; i < probe_idx.length; i++) {
+        var p = probe_idx[i];
+        var v = (pad_colors && pad_colors.length > p) ? (Number(pad_colors[p]) || 0) : 0;
+        probe_vals.push(p + ":" + v);
+    }
+    var top_vals = [];
+    for (i = 0; i < 8; i++) {
+        var b = (button_colors && button_colors.length > i) ? (Number(button_colors[i]) || 0) : 0;
+        top_vals.push("t" + i + ":" + b);
+    }
+    var first_nonzero = [];
+    var changed = [];
+    var maxv = 0;
+    if (pad_colors && pad_colors.length >= 64) {
+        for (i = 0; i < 64 && first_nonzero.length < 8; i++) {
+            var pv = Number(pad_colors[i]) || 0;
+            if (pv > maxv) { maxv = pv; }
+            if (pv > 0) { first_nonzero.push(i + ":" + pv); }
+        }
+        if (last_probe_pad_values && last_probe_pad_values.length >= 64) {
+            for (i = 0; i < 64 && changed.length < 10; i++) {
+                var prev = Number(last_probe_pad_values[i]) || 0;
+                var cur = Number(pad_colors[i]) || 0;
+                if (prev !== cur) {
+                    changed.push(i + ":" + prev + ">" + cur);
+                }
+            }
+        }
+        last_probe_pad_values = pad_colors.slice(0);
+    }
+    log("LP2000 OSD TRACE mode_id=" + mode_id + " mode=" + mode_val +
+        " hw=" + hardware_model +
+        " src=" + (active_note_src || "none") +
+        " pads=" + probe_vals.join(",") +
+        " top=" + top_vals.join(",") +
+        " nz=" + first_nonzero.join(",") +
+        " max=" + maxv +
+        " delta=" + changed.join(","));
+}
+
+function settle_mode_id(resolved_mode_id) {
+    var id = resolved_mode_id || "session";
+    if (id === stable_mode_id) {
+        candidate_mode_id = "";
+        candidate_mode_hits = 0;
+        return stable_mode_id;
+    }
+    if (id !== candidate_mode_id) {
+        candidate_mode_id = id;
+        candidate_mode_hits = 1;
+    } else {
+        candidate_mode_hits += 1;
+    }
+    if (candidate_mode_hits < 2) {
+        log("LP2000 OSD TRACE hold_mode stable=" + stable_mode_id + " candidate=" + id + " hits=" + candidate_mode_hits);
+        return stable_mode_id;
+    }
+    stable_mode_id = id;
+    candidate_mode_id = "";
+    candidate_mode_hits = 0;
+    return stable_mode_id;
+}
+
+function is_mode_hold_frame(resolved_mode_id, settled_mode_id) {
+    var raw = resolved_mode_id || "session";
+    var stable = settled_mode_id || "session";
+    return raw !== stable;
 }
 
 function ensure_pad_dict() {
@@ -898,10 +1072,9 @@ function update(args){
         var mode_val = safe_item(api_get_list(l95_osd, "mode"), 0, " ");
         var mode_id_val = safe_item(api_get_list(l95_osd, "mode_id"), 0, "");
         var hw_val = safe_item(api_get_list(l95_osd, "hardware_model"), 0, "");
-        var pad_colors = api_get_list(l95_osd, "pad_colors");
-        var button_colors = api_get_list(l95_osd, "button_colors");
-        if (pad_colors && pad_colors.length) { last_pad_colors = pad_colors.slice(0); }
-        if (button_colors && button_colors.length) { last_button_colors = button_colors.slice(0); }
+        var pad_colors = normalize_velocity_list(api_get_list(l95_osd, "pad_colors"), 64, "pad_colors");
+        var button_colors = normalize_velocity_list(api_get_list(l95_osd, "button_colors"), 16, "button_colors");
+        var active_note_src = safe_item(api_get_list(l95_osd, "active_note_source"), 0, "none");
 
         safe_message(mode, "set", mode_val);
         safe_message(info_0, "set", safe_item(info, 0, " "));
@@ -914,7 +1087,24 @@ function update(args){
         }
 
         set_hardware_model(hw_val);
-        mode_id_val = resolve_mode_id(mode_id_val, mode_val);
+        var resolved_mode_id = resolve_mode_id(mode_id_val, mode_val);
+        mode_id_val = settle_mode_id(resolved_mode_id);
+        var hold_frame = is_mode_hold_frame(resolved_mode_id, mode_id_val);
+        if (!hold_frame) {
+            if (pad_colors && pad_colors.length === 64) { last_pad_colors = pad_colors.slice(0); }
+            if (button_colors && button_colors.length === 16) { last_button_colors = button_colors.slice(0); }
+        } else {
+            if (last_pad_colors && last_pad_colors.length === 64) { pad_colors = last_pad_colors.slice(0); }
+            if (last_button_colors && last_button_colors.length === 16) { button_colors = last_button_colors.slice(0); }
+            log("LP2000 OSD TRACE hold_colors stable=" + mode_id_val + " raw=" + resolved_mode_id);
+        }
+        var repaint_sig = repaint_signature_for_mode(mode_id_val, mode_val);
+        if (repaint_sig !== last_repaint_signature) {
+            last_repaint_signature = repaint_sig;
+            reset_velocity_cache();
+            log("LP2000 OSD TRACE invalidate sig=" + repaint_sig);
+        }
+        log_pad_probe(mode_id_val, mode_val, pad_colors, button_colors, active_note_src);
         if (mode_id_val != pending_mode_id || layout_dirty) {
             pending_mode_id = mode_id_val;
             schedule_mode_assets();
@@ -953,6 +1143,12 @@ function init_ui(){
 
     apply_section_visibility();
     pending_mode_id = "session";
+    stable_mode_id = "session";
+    candidate_mode_id = "";
+    candidate_mode_hits = 0;
+    last_probe_pad_values = null;
+    last_repaint_signature = "";
+    reset_velocity_cache();
     schedule_mode_assets();
 }
 
@@ -975,6 +1171,11 @@ function schedule_mode_assets(){
 
 function resolve_mode_id(mode_id_val, mode_val){
     var id = mode_id_val;
+    if ((!id || id === "") && last_mode_id && MODE_MAP[last_mode_id]) {
+        // Prefer canonical mode_id continuity when LiveAPI mode_id is temporarily blank.
+        // This avoids cross-component mode-string chatter (e.g. transient device/session bleed).
+        return last_mode_id;
+    }
     if (!id || id === "" || !MODE_MAP[id]) {
         var m = (mode_val || "").toLowerCase();
         if (m.indexOf("instrument (quick scale)") >= 0) {
@@ -1111,6 +1312,7 @@ function apply_section_visibility(){
 // L95 DEBUG OVERRIDES START
 var log_enabled = LOG_ENABLED;
 var log_path = "";
+var log_paths = null;
 var last_screenshot_path = "";
 var boot_task = null;
 var boot_attempts = 0;
@@ -1193,17 +1395,81 @@ function ensure_log_path(){
     return "";
 }
 
+function _push_unique_path(paths, p){
+    if (!p || p.length === 0) { return; }
+    for (var i = 0; i < paths.length; i++) {
+        if (paths[i] === p) { return; }
+    }
+    paths.push(p);
+}
+
+function derive_remote_scripts_root(){
+    var base = get_base_dir();
+    if (base && base.length) {
+        var p = base.replace(/\\/g, "/");
+        var marker = "/Launchpad2000/";
+        var idx = p.indexOf(marker);
+        if (idx >= 0) { return p.substring(0, idx); }
+    }
+    var repo = derive_repo_base();
+    if (repo && repo.length) {
+        var r = repo.replace(/\\/g, "/");
+        var j = r.lastIndexOf("/");
+        if (j >= 0) { return r.substring(0, j); }
+    }
+    return "";
+}
+
+function ensure_log_paths(){
+    if (log_paths && log_paths.length) { return log_paths; }
+    log_paths = [];
+    _push_unique_path(log_paths, ensure_log_path());
+    var root = derive_remote_scripts_root();
+    if (root && root.length) {
+        _push_unique_path(log_paths, root + "/log.txt");
+        if (root.indexOf("/OneDrive/Documents/") >= 0) {
+            _push_unique_path(log_paths, root.replace("/OneDrive/Documents/", "/Documents/") + "/log.txt");
+        } else if (root.indexOf("/Documents/") >= 0) {
+            _push_unique_path(log_paths, root.replace("/Documents/", "/OneDrive/Documents/") + "/log.txt");
+        }
+    }
+    return log_paths;
+}
+
 function log(msg){
     if (!log_enabled) { return; }
+    var paths = ensure_log_paths();
+    if (!paths || paths.length === 0) { return; }
+    var line = new Date() + " " + msg;
+    var path = "";
+    var i = 0;
+    var f = null;
     try {
-        var path = ensure_log_path();
-        if (!path || path.length === 0) { return; }
-        var f = new File(path, "append");
-        if (!f || !f.isopen) { return; }
-        f.writeline(new Date() + " " + msg);
-        f.close();
+        for (i = 0; i < paths.length; i++) {
+            path = paths[i];
+            if (!path || path.length === 0) { continue; }
+            f = new File(path, "readwrite");
+            if (!f || !f.isopen) {
+                try {
+                    f = new File(path, "write");
+                } catch (e0) {
+                    f = null;
+                }
+            }
+            if (!f || !f.isopen) { continue; }
+            try {
+                f.position = f.eof;
+            } catch (e1) { }
+            try {
+                f.writeline(line);
+            } catch (e2) { }
+            try {
+                if (f && f.isopen) { f.close(); }
+            } catch (e3) { }
+            f = null;
+        }
     } catch (e) {
-        // ignore
+        try { if (f && f.isopen) { f.close(); } } catch (e4) { }
     }
 }
 

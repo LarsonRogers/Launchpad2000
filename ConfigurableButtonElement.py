@@ -80,7 +80,8 @@ class ConfigurableButtonElement(ButtonElement):
 		elif type(value) is int:
 			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
 				try:
-					self._control_surface._update_pad_color_from_index(self._lp_pad_index, value)
+					if self._should_precache_pad_mirror():
+						self._control_surface._update_pad_color_from_index(self._lp_pad_index, value)
 				except Exception:
 					pass
 			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
@@ -145,7 +146,8 @@ class ConfigurableButtonElement(ButtonElement):
 		if type(self._on_value) is int:
 			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
 				try:
-					self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._on_value)
+					if self._should_precache_pad_mirror():
+						self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._on_value)
 				except Exception:
 					pass
 			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
@@ -161,7 +163,8 @@ class ConfigurableButtonElement(ButtonElement):
 		if type(self._off_value) is int:
 			if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
 				try:
-					self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._off_value)
+					if self._should_precache_pad_mirror():
+						self._control_surface._update_pad_color_from_index(self._lp_pad_index, self._off_value)
 				except Exception:
 					pass
 			if self._control_surface is not None and hasattr(self, "_lp_button_index"):
@@ -175,6 +178,17 @@ class ConfigurableButtonElement(ButtonElement):
 
 	def _draw_skin(self, value):
 		self._skin[value].draw(self)
+
+	def _should_precache_pad_mirror(self):
+		# In dynamic Instrument mapping, only mirror actual outgoing MIDI in Launchpad._send_midi.
+		# Pre-send cache writes here can stamp stale baseline colors on top of true hardware feedback.
+		if self._control_surface is not None and hasattr(self, "_lp_pad_index"):
+			try:
+				if hasattr(self._control_surface, "_use_dynamic_note_map") and self._control_surface._use_dynamic_note_map():
+					return False
+			except Exception:
+				pass
+		return True
 		
 	def script_wants_forwarding(self):
 		return not self.suppress_script_forwarding

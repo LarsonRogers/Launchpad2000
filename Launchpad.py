@@ -94,6 +94,11 @@ class Launchpad(ControlSurface):
 			self._pad_base_colors = [0 for _ in range(64)]
 			self._pad_override_active = [0 for _ in range(64)]
 			self._pad_override_colors = [0 for _ in range(64)]
+			self._active_note_source = "none"
+			self._active_note_listener_added = False
+			self._active_api_clip = None
+			self._active_api_note_cache = ()
+			self._active_api_pad_overrides = {}
 		# caller will send challenge and we will continue as challenge is received.
 		
 			
@@ -182,6 +187,7 @@ class Launchpad(ControlSurface):
 					pass
 			self._osd = M4LInterface()
 			self._osd.name = "OSD"
+			self._osd.active_note_source = self._active_note_source
 			if self._lpx:
 				self._osd.hardware_model = "lpx"
 			elif self._mk3_rgb:
@@ -190,6 +196,14 @@ class Launchpad(ControlSurface):
 				self._osd.hardware_model = "mk2"
 			else:
 				self._osd.hardware_model = "mk1"
+			if Settings.LOGGING:
+				try:
+					log("LP2000 HW MODEL model=" + str(self._osd.hardware_model) +
+						" mk2=" + str(self._mk2_rgb) +
+						" mk3=" + str(self._mk3_rgb) +
+						" lpx=" + str(self._lpx))
+				except Exception:
+					pass
 			try:
 				for i in range(64):
 					self._osd.pad_colors[i] = self._pad_colors_cache[i]
@@ -218,6 +232,7 @@ class Launchpad(ControlSurface):
 			self._selector.update()
 			self.schedule_message(2, self._refresh_osd_state)
 			self.schedule_message(6, self._refresh_osd_state)
+			self._install_active_note_listener()
 			if self._lpx:
 				self.log_message("LaunchPad95 (LPX) Loaded !")
 			elif self._mk3_rgb:
@@ -229,6 +244,8 @@ class Launchpad(ControlSurface):
 				
 	def disconnect(self):
 		self._suppress_send_midi = True
+		self._remove_active_note_listener()
+		self._set_active_api_clip(None)
 		for control in self.controls:
 			if isinstance(control, ConfigurableButtonElement):
 				control.remove_value_listener(self._button_value)
@@ -362,6 +379,50 @@ class Launchpad(ControlSurface):
 				#self._selector.mode_index == 1:
 				#if self._selector._sub_mode_list[self._selector._mode_index] > 0:  # disable midi map rebuild for instrument mode to prevent light feedback errors
 
+	def _install_active_note_listener(self):
+		if self._active_note_listener_added:
+			return
+		try:
+			if not self.song().current_song_time_has_listener(self._on_song_time_changed):
+				self.song().add_current_song_time_listener(self._on_song_time_changed)
+			self._active_note_listener_added = True
+		except Exception:
+			self._active_note_listener_added = False
+
+	def _remove_active_note_listener(self):
+		if not self._active_note_listener_added:
+			return
+		try:
+			if self.song().current_song_time_has_listener(self._on_song_time_changed):
+				self.song().remove_current_song_time_listener(self._on_song_time_changed)
+		except Exception:
+			pass
+		self._active_note_listener_added = False
+
+	def _set_active_note_source(self, source):
+		src = source or "none"
+		if src != "input" and src != "output" and src != "api":
+			src = "none"
+		self._active_note_source = src
+		try:
+			if self._osd is not None and hasattr(self._osd, "active_note_source"):
+				self._osd.active_note_source = src
+		except Exception:
+			pass
+
+	def _on_song_time_changed(self):
+		try:
+			self._update_active_notes_from_api()
+		except Exception:
+			pass
+
+	def receive_midi(self, midi_bytes):
+		try:
+			self._mirror_dynamic_feedback_from_input(midi_bytes)
+		except Exception:
+			pass
+		ControlSurface.receive_midi(self, midi_bytes)
+
 
 	def _send_midi(self, midi_bytes, optimized=None):
 		sent_successfully = False
@@ -427,6 +488,273 @@ class Launchpad(ControlSurface):
 			except Exception:
 				pass
 		return sent_successfully
+
+	def _instrument_feedback_velocity(self):
+		try:
+			if self.song().session_record:
+				return int(self._skin['Note.FeedbackRecord']) & 127
+		except Exception:
+			pass
+		try:
+			return int(self._skin['Note.Feedback']) & 127
+		except Exception:
+			return 1
+
+	def _set_pad_feedback_override(self, pad_index, velocity):
+		if self._osd is None or not hasattr(self._osd, "pad_colors"):
+			return
+		try:
+			idx = int(pad_index)
+		except Exception:
+			return
+		if idx < 0 or idx >= 64:
+			return
+		val = int(velocity) & 127
+		if not hasattr(self, "_pad_base_colors"):
+			self._pad_base_colors = [0 for _ in range(64)]
+		if not hasattr(self, "_pad_override_active"):
+			self._pad_override_active = [0 for _ in range(64)]
+		if not hasattr(self, "_pad_override_colors"):
+			self._pad_override_colors = [0 for _ in range(64)]
+		if val > 0:
+			self._pad_override_active[idx] = 1
+			self._pad_override_colors[idx] = val
+			target = val
+		else:
+			self._pad_override_active[idx] = 0
+			self._pad_override_colors[idx] = 0
+			target = int(self._pad_base_colors[idx]) & 127
+		if self._osd.pad_colors[idx] != target:
+			self._osd.pad_colors[idx] = target
+			try:
+				self._pad_colors_cache[idx] = target
+			except Exception:
+				pass
+			self._schedule_pad_colors_update()
+
+	def _mirror_dynamic_feedback_from_input(self, midi_bytes):
+		if midi_bytes is None or len(midi_bytes) < 3:
+			return
+		try:
+			if not self._use_dynamic_note_map():
+				return
+		except Exception:
+			return
+		status_byte = int(midi_bytes[0]) & 255
+		status = status_byte & 240
+		channel = status_byte & 15
+		if status == 128:
+			note = int(midi_bytes[1]) & 127
+			velocity = 0
+		elif status == 144:
+			note = int(midi_bytes[1]) & 127
+			velocity = int(midi_bytes[2]) & 127
+		else:
+			return
+		pad_index = -1
+		if hasattr(self, "_dynamic_note_to_pad_index"):
+			try:
+				key = self._note_map_key(note, channel)
+				if key is not None:
+					pad_index = self._dynamic_note_to_pad_index.get(key, -1)
+			except Exception:
+				pad_index = -1
+		if pad_index < 0 and hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+			try:
+				pad_index = self._dynamic_note_to_pad_index_by_note.get(note, -1)
+			except Exception:
+				pad_index = -1
+		if pad_index < 0:
+			return
+		if velocity > 0:
+			feedback_velocity = self._instrument_feedback_velocity()
+			if feedback_velocity <= 0:
+				feedback_velocity = velocity
+			self._set_pad_feedback_override(pad_index, feedback_velocity)
+			self._set_active_note_source("input")
+			if Settings.LOGGING:
+				try:
+					log("LP2000 ACTIVE NOTE MAP note=" + str(note) +
+						" ch=" + str(channel) +
+						" idx=" + str(pad_index) +
+						" vel=" + str(velocity) +
+						" src=input")
+				except Exception:
+					pass
+		else:
+			self._set_pad_feedback_override(pad_index, 0)
+
+	def _set_active_api_clip(self, clip):
+		if clip == self._active_api_clip:
+			return
+		old_clip = self._active_api_clip
+		if old_clip is not None:
+			try:
+				if old_clip.notes_has_listener(self._on_active_api_clip_notes_changed):
+					old_clip.remove_notes_listener(self._on_active_api_clip_notes_changed)
+			except Exception:
+				pass
+		self._active_api_clip = clip
+		self._active_api_note_cache = ()
+		if self._active_api_clip is not None:
+			try:
+				self._active_api_clip.add_notes_listener(self._on_active_api_clip_notes_changed)
+			except Exception:
+				pass
+			self._on_active_api_clip_notes_changed()
+
+	def _on_active_api_clip_notes_changed(self):
+		clip = self._active_api_clip
+		if clip is None:
+			self._active_api_note_cache = ()
+			return
+		try:
+			clip.select_all_notes()
+			self._active_api_note_cache = clip.get_selected_notes()
+			clip.deselect_all_notes()
+		except Exception:
+			self._active_api_note_cache = ()
+
+	def _resolve_instrument_feedback_track(self):
+		track = None
+		try:
+			instrument_controller = getattr(self._selector, "_instrument_controller", None)
+		except Exception:
+			instrument_controller = None
+		if instrument_controller is not None:
+			try:
+				if instrument_controller.is_enabled():
+					track = instrument_controller._track_controller.selected_track
+			except Exception:
+				track = None
+		if track is None:
+			try:
+				track = self.song().view.selected_track
+			except Exception:
+				track = None
+		return track
+
+	def _resolve_instrument_playing_clip(self):
+		track = self._resolve_instrument_feedback_track()
+		if track is None:
+			return None
+		try:
+			slot_index = int(track.playing_slot_index)
+		except Exception:
+			return None
+		if slot_index < 0:
+			return None
+		try:
+			if slot_index >= len(track.clip_slots):
+				return None
+			clip_slot = track.clip_slots[slot_index]
+		except Exception:
+			return None
+		if clip_slot is None:
+			return None
+		try:
+			if not clip_slot.has_clip:
+				return None
+			clip = clip_slot.clip
+			if clip is not None and clip.is_playing:
+				return clip
+		except Exception:
+			return None
+		return None
+
+	def _clear_api_note_overrides(self):
+		if not self._active_api_pad_overrides:
+			return
+		try:
+			for idx in list(self._active_api_pad_overrides.keys()):
+				self._set_pad_feedback_override(idx, 0)
+		except Exception:
+			pass
+		self._active_api_pad_overrides = {}
+
+	def _note_is_playing_at_position(self, note, playhead):
+		try:
+			note_key = int(note[0]) & 127
+			note_position = float(note[1])
+			note_length = float(note[2])
+			note_muted = bool(note[4])
+		except Exception:
+			return None
+		if note_muted:
+			return None
+		end_position = note_position + note_length
+		if note_position <= playhead and end_position >= playhead:
+			return note_key
+		return None
+
+	def _update_active_notes_from_api(self):
+		try:
+			if not self._use_dynamic_note_map():
+				self._clear_api_note_overrides()
+				self._set_active_api_clip(None)
+				if self._active_note_source == "api":
+					self._set_active_note_source("none")
+				return
+		except Exception:
+			return
+		try:
+			if not self.song().is_playing:
+				self._clear_api_note_overrides()
+				if self._active_note_source == "api":
+					self._set_active_note_source("none")
+				return
+		except Exception:
+			pass
+		clip = self._resolve_instrument_playing_clip()
+		self._set_active_api_clip(clip)
+		if clip is None:
+			self._clear_api_note_overrides()
+			if self._active_note_source == "api":
+				self._set_active_note_source("none")
+			return
+		try:
+			playhead = float(clip.playing_position)
+		except Exception:
+			playhead = 0.0
+		new_active = {}
+		note_cache = self._active_api_note_cache
+		if note_cache is None:
+			note_cache = ()
+		for note in note_cache:
+			note_key = self._note_is_playing_at_position(note, playhead)
+			if note_key is None:
+				continue
+			pad_index = -1
+			try:
+				if hasattr(self, "_dynamic_note_to_pad_index_by_note"):
+					pad_index = self._dynamic_note_to_pad_index_by_note.get(note_key, -1)
+			except Exception:
+				pad_index = -1
+			if pad_index < 0:
+				pad_index = self._find_pad_index_in_matrix(note_key, None)
+			if pad_index >= 0 and pad_index < 64:
+				new_active[pad_index] = note_key
+		old_active = self._active_api_pad_overrides
+		feedback_velocity = self._instrument_feedback_velocity()
+		for idx in list(old_active.keys()):
+			if idx not in new_active:
+				self._set_pad_feedback_override(idx, 0)
+		for idx in list(new_active.keys()):
+			if idx not in old_active:
+				self._set_pad_feedback_override(idx, feedback_velocity)
+		self._active_api_pad_overrides = new_active
+		if len(new_active) > 0:
+			self._set_active_note_source("api")
+		elif self._active_note_source == "api":
+			self._set_active_note_source("none")
+		if Settings.LOGGING and old_active != new_active:
+			try:
+				keys = sorted(new_active.keys())
+				if len(keys) > 8:
+					keys = keys[:8]
+				log("LP2000 ACTIVE NOTE MAP src=api pads=" + ",".join([str(x) for x in keys]) + " count=" + str(len(new_active)))
+			except Exception:
+				pass
 
 	def _button_index_from_cc(self, cc):
 		try:
@@ -536,6 +864,13 @@ class Launchpad(ControlSurface):
 
 	def _use_dynamic_note_map(self):
 		try:
+			try:
+				if self._osd is not None and hasattr(self._osd, "mode_id"):
+					mode_id = getattr(self._osd, "mode_id", "")
+					if mode_id in ("instrument", "instrument_quick_scale", "instrument_scale"):
+						return True
+			except Exception:
+				pass
 			if self._selector is None:
 				return False
 			try:
@@ -546,9 +881,13 @@ class Launchpad(ControlSurface):
 				return True
 			if hasattr(self._selector, "_main_mode_index") and hasattr(self._selector, "_sub_mode_list"):
 				if self._selector._main_mode_index == 1:
-					sub_index = self._selector._sub_mode_list[self._selector._main_mode_index]
-					if sub_index == 0:
-						return True
+					try:
+						sub_index = self._selector._sub_mode_list[self._selector._main_mode_index]
+						mode_name = Settings.USER_MODES_1[sub_index]
+						if str(mode_name).lower() == "instrument":
+							return True
+					except Exception:
+						pass
 		except Exception:
 			return False
 		return False
@@ -881,7 +1220,49 @@ class Launchpad(ControlSurface):
 		except Exception:
 			in_dynamic = False
 		if in_dynamic:
+			# MK1 instrument LEDs already arrive on stable grid note numbers (0..7, 16..23, ...).
+			# Use static grid mapping directly to avoid stale dynamic remap cache bleed.
+			if (not self._mk2_rgb) and (not self._mk3_rgb) and (not self._lpx):
+				pad_index = -1
+				try:
+					if hasattr(self, "_static_note_to_pad_index"):
+						pad_index = self._static_note_to_pad_index.get(note, -1)
+				except Exception:
+					pad_index = -1
+				if pad_index < 0:
+					row = note // 16
+					col = note % 16
+					if row >= 0 and row < 8 and col >= 0 and col < 8:
+						pad_index = row * 8 + col
+				if pad_index < 0 or pad_index >= 64:
+					return
+				try:
+					if hasattr(self, "_pad_override_active"):
+						self._pad_override_active[pad_index] = 0
+					if hasattr(self, "_pad_override_colors"):
+						self._pad_override_colors[pad_index] = 0
+				except Exception:
+					pass
+				self._set_active_note_source("output")
+				if Settings.LOGGING and velocity > 0:
+					try:
+						log("LP2000 ACTIVE NOTE MAP note=" + str(note) +
+							" ch=" + str(channel) +
+							" idx=" + str(pad_index) +
+							" vel=" + str(velocity) +
+							" src=output")
+					except Exception:
+						pass
+				self._update_pad_color_from_index(pad_index, velocity)
+				return
 			pad_index = -1
+			# MK2/MK3/LPX commonly use channel 15 for static-grid feedback writes.
+			# Mirror the channel-15 static fallback used in _pad_index_from_note().
+			if channel == 15 and hasattr(self, "_static_note_to_pad_index"):
+				try:
+					pad_index = self._static_note_to_pad_index.get(note, -1)
+				except Exception:
+					pad_index = -1
 			allow_note_only_fallback = self._allow_dynamic_note_only_fallback(note, channel)
 			if hasattr(self, "_dynamic_note_to_pad_index"):
 				try:
@@ -899,7 +1280,26 @@ class Launchpad(ControlSurface):
 					pad_index = -1
 			if pad_index < 0 and allow_note_only_fallback:
 				pad_index = self._find_pad_index_in_matrix(note, None)
+			if pad_index < 0 and (self._mk2_rgb or self._mk3_rgb or self._lpx):
+				# On MK2/MK3/LPX, some LED feedback paths still use physical grid note IDs.
+				# If dynamic note-key lookup misses, fall back to static grid mapping.
+				try:
+					if hasattr(self, "_static_note_to_pad_index"):
+						pad_index = self._static_note_to_pad_index.get(note, -1)
+				except Exception:
+					pad_index = -1
 			if pad_index < 0 or pad_index >= 64:
+				if Settings.LOGGING and velocity > 0:
+					try:
+						log("LP2000 ACTIVE NOTE MISS note=" + str(note) +
+							" ch=" + str(channel) +
+							" vel=" + str(velocity) +
+							" mk2=" + str(self._mk2_rgb) +
+							" mk3=" + str(self._mk3_rgb) +
+							" lpx=" + str(self._lpx) +
+							" src=output")
+					except Exception:
+						pass
 				self._debug_dynamic_note_resolution("update_pad_colors", note, channel, "dynamic_unresolved", -1)
 				return
 			if allow_note_only_fallback:
@@ -915,6 +1315,17 @@ class Launchpad(ControlSurface):
 					self._pad_override_colors[pad_index] = 0
 			except Exception:
 				pass
+			self._set_active_note_source("output")
+			if Settings.LOGGING and velocity > 0:
+				try:
+					log("LP2000 ACTIVE NOTE MAP note=" + str(note) +
+						" ch=" + str(channel) +
+						" idx=" + str(pad_index) +
+						" vel=" + str(velocity) +
+						" mk2=" + str(self._mk2_rgb) +
+						" src=output")
+				except Exception:
+					pass
 			self._update_pad_color_from_index(pad_index, velocity)
 			return
 		pad_index = self._pad_index_from_note(note, channel)
@@ -947,6 +1358,16 @@ class Launchpad(ControlSurface):
 						log("LP2000 LED TRACE pad_cache idx=" + str(idx) + " val=" + str(val))
 			except Exception:
 				pass
+			if val > 0:
+				try:
+					mode_id = getattr(self._osd, "mode_id", "")
+				except Exception:
+					mode_id = ""
+				if mode_id in ("instrument", "instrument_quick_scale", "instrument_scale"):
+					try:
+						log("LP2000 ACTIVE PAD WRITE mode_id=" + str(mode_id) + " idx=" + str(idx) + " vel=" + str(val))
+					except Exception:
+						pass
 		if not hasattr(self, "_pad_base_colors"):
 			self._pad_base_colors = [0 for _ in range(64)]
 		if not hasattr(self, "_pad_override_active"):
